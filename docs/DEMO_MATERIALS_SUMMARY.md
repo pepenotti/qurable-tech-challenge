@@ -55,7 +55,7 @@
 npm install -g @marp-team/marp-cli
 
 # Generate slides
-cd qble/
+cd qurable-tech-challenge/docs/
 marp DEMO_PRESENTATION.md -o demo-slides.html
 
 # Open and present
@@ -249,20 +249,29 @@ After your presentation, evaluators should think:
 
 ## 📁 File Locations
 
-All in `qble/` directory:
+All in project root:
 
 ```
-qble/
-├── DEMO_TALK_SCRIPT.md           ← Detailed script
-├── DEMO_PRESENTATION.md          ← Marp slides (THIS)
-├── DEMO_SETUP_GUIDE.md           ← Setup instructions
-├── DEMO_MATERIALS_SUMMARY.md     ← This file
-├── diagrams/
-│   └── exported/png/             ← All diagrams ready
-├── coupon-service/
-│   ├── GETTING_STARTED.md        ← Reference if asked
-│   └── docs/                     ← Supporting docs
-└── README.md                     ← Project overview
+qurable-tech-challenge/
+├── README.md                     ← Project overview
+├── GETTING_STARTED.md            ← Setup instructions
+├── docker-compose.yml            ← Docker configuration
+├── requirements.txt              ← Python dependencies
+├── init_db.py                    ← Database initialization
+├── showcase_tests.sh             ← Integration tests
+├── app/                          ← FastAPI application
+├── frontend/                     ← Vue 3 frontend
+├── alembic/                      ← Database migrations
+├── examples/                     ← Example scripts
+└── docs/                         ← All documentation
+    ├── DEMO_TALK_SCRIPT.md       ← Presentation script
+    ├── DEMO_PRESENTATION.md      ← Marp slides
+    ├── DEMO_SETUP_GUIDE.md       ← Presentation setup
+    ├── DEMO_MATERIALS_SUMMARY.md ← This file
+    ├── CHALLENGE_SUMMARY.md      ← Original challenge
+    ├── REQUIREMENTS_VS_DELIVERY.md
+    ├── diagrams/                 ← PlantUML diagrams
+    └── [other docs...]           ← Feature guides
 ```
 
 ---
@@ -276,7 +285,7 @@ qble/
 
 2. **Generate your slides**
    ```bash
-   cd qble/
+   cd qurable-tech-challenge/docs/
    marp DEMO_PRESENTATION.md -o demo-slides.html
    ```
 

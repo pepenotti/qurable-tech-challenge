@@ -193,7 +193,7 @@ Your exported diagrams are ready in `diagrams/exported/png/`:
 **Before you start**:
 ```bash
 # Start everything
-cd qble/coupon-service
+cd qurable-tech-challenge
 docker-compose up -d
 cd frontend
 npm run dev

@@ -249,10 +249,10 @@ plantuml -o ./exported/png *.puml
 - **Deployment Diagrams**: https://plantuml.com/deployment-diagram
 
 ### Project Documentation
-- **Main README**: `../README.md` - Project overview
-- **Getting Started**: `../coupon-service/GETTING_STARTED.md` - Setup guide
-- **Showcase Guide**: `../coupon-service/docs/SHOWCASE_GUIDE.md` - Demo walkthrough
-- **Implementation Status**: `../coupon-service/docs/IMPLEMENTATION_STATUS.md` - Feature checklist
+- **Main README**: `../../README.md` - Project overview
+- **Getting Started**: `../../GETTING_STARTED.md` - Setup guide
+- **Showcase Guide**: `../SHOWCASE_GUIDE.md` - Demo walkthrough
+- **Implementation Status**: `../IMPLEMENTATION_STATUS.md` - Feature checklist
 
 ---
 

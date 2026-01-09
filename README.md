@@ -26,7 +26,6 @@ This project implements a **complete coupon book service** as specified in the t
 
 ### 1. Start Backend (FastAPI + PostgreSQL)
 ```bash
-cd coupon-service
 docker-compose up -d
 
 # Initialize database with mock data
@@ -38,7 +37,7 @@ API docs: `http://localhost:8000/docs`
 
 ### 2. Start Frontend (Vue 3)
 ```bash
-cd coupon-service/frontend
+cd frontend
 npm install
 npm run dev
 ```
@@ -61,17 +60,17 @@ Frontend will be available at: `http://localhost:5173`
 ## 📚 Documentation
 
 ### Quick Start
-- **[⚡ Getting Started](./coupon-service/GETTING_STARTED.md)** - Setup & installation guide
+- **[⚡ Getting Started](./GETTING_STARTED.md)** - Setup & installation guide
 
 ### Core Documentation  
-- **[📖 Showcase Guide](./coupon-service/docs/SHOWCASE_GUIDE.md)** - Complete feature walkthrough
-- **[🔄 State Flow](./coupon-service/docs/COUPON_STATE_FLOW.md)** - State machine documentation
-- **[📋 Feature Checklist](./coupon-service/docs/FEATURE_CHECKLIST.md)** - Testing checklist
+- **[📖 Showcase Guide](./docs/SHOWCASE_GUIDE.md)** - Complete feature walkthrough
+- **[🔄 State Flow](./docs/COUPON_STATE_FLOW.md)** - State machine documentation
+- **[📋 Feature Checklist](./docs/FEATURE_CHECKLIST.md)** - Testing checklist
 
 ### Technical Documentation
-- **[🔐 Authentication](./coupon-service/docs/AUTHENTICATION_GUIDE.md)** - Auth setup & usage
-- **[📊 Implementation Status](./coupon-service/docs/IMPLEMENTATION_STATUS.md)** - What's built & production readiness
-- **[🏗️ Architecture Diagrams](./diagrams/README.md)** - System architecture & sequence diagrams
+- **[🔐 Authentication](./docs/AUTHENTICATION_GUIDE.md)** - Auth setup & usage
+- **[📊 Implementation Status](./docs/IMPLEMENTATION_STATUS.md)** - What's built & production readiness
+- **[🏗️ Architecture Diagrams](./docs/diagrams/README.md)** - System architecture & sequence diagrams
 
 ### Challenge Requirements
 - **[🎯 Challenge Summary](./CHALLENGE_SUMMARY.md)** - Original technical challenge specification
@@ -98,7 +97,6 @@ Frontend will be available at: `http://localhost:5173`
 Run the showcase test suite:
 
 ```bash
-cd coupon-service
 ./showcase_tests.sh
 ```
 
