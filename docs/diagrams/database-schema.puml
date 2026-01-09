@@ -10,6 +10,7 @@ title Coupon Book Service - Database Schema
 
 TABLE(Users) {
     PK(user_id): VARCHAR
+    --
     name: VARCHAR
     email: VARCHAR (UNIQUE)
     hashed_password: VARCHAR
@@ -22,11 +23,11 @@ TABLE(Users) {
 TABLE(Books) {
     PK(book_id): VARCHAR
     FK(owner_id): VARCHAR
+    --
     name: VARCHAR
     description: VARCHAR
     created_at: TIMESTAMP
     expiration_date: TIMESTAMP
-    --
     allow_multi_redemption: BOOLEAN
     max_redemptions_per_user: INTEGER
     max_assignments_per_user: INTEGER
@@ -39,14 +40,12 @@ TABLE(Coupons) {
     PK(code): VARCHAR(50)
     FK(book_id): VARCHAR
     FK(assigned_user_id): VARCHAR
-    state: VARCHAR(20)
     --
+    state: VARCHAR(20)
     redemption_count: INTEGER
     max_redemptions: INTEGER
-    --
     is_locked: BOOLEAN
     locked_until: TIMESTAMP
-    --
     created_at: TIMESTAMP
     updated_at: TIMESTAMP
 }
@@ -56,15 +55,17 @@ TABLE(RedemptionHistory) {
     FK(code): VARCHAR
     FK(user_id): VARCHAR
     FK(book_id): VARCHAR
+    --
     redeemed_at: TIMESTAMP
     redemption_metadata: JSONB
 }
 
 TABLE(UserPools) {
     PK(pool_id): VARCHAR
+    FK(created_by): VARCHAR
+    --
     name: VARCHAR
     description: TEXT
-    FK(created_by): VARCHAR
     is_active: BOOLEAN
     created_at: TIMESTAMP
     updated_at: TIMESTAMP
@@ -73,6 +74,7 @@ TABLE(UserPools) {
 TABLE(pool_users) {
     PK(FK(pool_id)): VARCHAR
     PK(FK(user_id)): VARCHAR
+    --
     added_at: TIMESTAMP
 }
 

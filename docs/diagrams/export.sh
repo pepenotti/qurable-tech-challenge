@@ -58,12 +58,32 @@ echo ""
 echo -e "${YELLOW}🖼️  Exporting to PNG...${NC}"
 plantuml -tpng -o "$OUTPUT_DIR/png" "$DIAGRAMS_DIR"/*.puml
 echo -e "${GREEN}✓ PNG export complete${NC}"
+
+# Rename PNG files: replace spaces with hyphens
+echo -e "${YELLOW}🔄 Renaming PNG files (spaces → hyphens)...${NC}"
+for file in "$OUTPUT_DIR/png"/*.png; do
+    if [[ -f "$file" && "$file" =~ \  ]]; then
+        newfile="${file// /-}"
+        mv "$file" "$newfile"
+    fi
+done
+echo -e "${GREEN}✓ PNG files renamed${NC}"
 echo ""
 
 # Export to SVG
 echo -e "${YELLOW}🎨 Exporting to SVG...${NC}"
 plantuml -tsvg -o "$OUTPUT_DIR/svg" "$DIAGRAMS_DIR"/*.puml
 echo -e "${GREEN}✓ SVG export complete${NC}"
+
+# Rename SVG files: replace spaces with hyphens
+echo -e "${YELLOW}🔄 Renaming SVG files (spaces → hyphens)...${NC}"
+for file in "$OUTPUT_DIR/svg"/*.svg; do
+    if [[ -f "$file" && "$file" =~ \  ]]; then
+        newfile="${file// /-}"
+        mv "$file" "$newfile"
+    fi
+done
+echo -e "${GREEN}✓ SVG files renamed${NC}"
 echo ""
 
 # List exported files
