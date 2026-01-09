@@ -1,0 +1,58 @@
+@startuml System Architecture
+skinparam backgroundColor #FEFEFE
+skinparam componentStyle rectangle
+
+title Coupon Book Service - High-Level Architecture
+
+actor "Users/Clients" as Users
+
+package "Application Tier" {
+    component "FastAPI Service" as API #87CEEB {
+        [REST API]
+        [Async/Await]
+        [Business Logic]
+    }
+}
+
+package "Data Tier" {
+    database "PostgreSQL" as DB #4169E1 {
+        [Coupon Data]
+        [User Data]
+        [Audit Logs]
+    }
+}
+
+package "Deployment" {
+    cloud "Docker Containers" as Docker #90EE90
+}
+
+' Connections
+Users --> API : HTTP/REST\nJSON
+API --> DB : SQL Queries\nRow Locking
+Docker ..> API : Hosts
+Docker ..> DB : Hosts
+
+note right of API
+  **Key Features:**
+  • RESTful API design
+  • Async operations
+  • Swagger docs (/docs)
+  • State machine validation
+end note
+
+note right of DB
+  **Concurrency Control:**
+  • SELECT FOR UPDATE
+  • SKIP LOCKED
+  • ACID transactions
+  • Pessimistic locking
+end note
+
+note bottom of Docker
+  **Deployment:**
+  • Docker Compose (dev)
+  • AWS ECS / GCP Cloud Run (prod)
+  • Horizontal scaling ready
+end note
+
+@enduml

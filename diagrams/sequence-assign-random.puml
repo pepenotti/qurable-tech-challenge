@@ -1,0 +1,45 @@
+@startuml Assign Random Coupon
+skinparam backgroundColor #FEFEFE
+skinparam sequenceMessageAlign center
+
+title Assign Random Coupon to User (High-Level)
+
+actor User
+participant "API" as API
+database "Database" as DB
+
+User -> API : POST /coupons/assign\n{book_id, user_id}
+activate API
+
+API -> DB : BEGIN TRANSACTION
+activate DB
+
+API -> DB : SELECT random UNASSIGNED coupon\n**FOR UPDATE SKIP LOCKED**
+note right
+  **Concurrency Magic:**
+  - FOR UPDATE = Lock the row
+  - SKIP LOCKED = Skip busy rows
+  → No race conditions!
+end note
+
+DB --> API : Coupon (locked)
+
+API -> API : Validate:\n- User exists\n- Under max assignments limit
+
+API -> DB : UPDATE coupon\nSET state='ASSIGNED'\nSET assigned_user_id=user_id
+
+API -> DB : COMMIT
+deactivate DB
+
+API --> User : 200 OK\n{code: "ABC123", state: "ASSIGNED"}
+deactivate API
+
+note over User, DB
+  **Key Points for Interview:**
+  1. Random selection from available pool
+  2. Pessimistic locking prevents race conditions
+  3. Atomic transaction (all or nothing)
+  4. Fast even under high concurrency
+end note
+
+@enduml

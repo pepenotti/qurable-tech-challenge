@@ -1,0 +1,152 @@
+@startuml Database Schema
+!define TABLE(x) class x << (T,#FFAAAA) >>
+!define PK(x) <b><u>x</u></b>
+!define FK(x) <i>x</i>
+
+skinparam backgroundColor #FEFEFE
+skinparam classAttributeIconSize 0
+
+title Coupon Book Service - Database Schema
+
+TABLE(Users) {
+    PK(user_id): VARCHAR
+    name: VARCHAR
+    email: VARCHAR (UNIQUE)
+    hashed_password: VARCHAR
+    role: ENUM(admin, user)
+    is_active: BOOLEAN
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+TABLE(Books) {
+    PK(book_id): VARCHAR
+    FK(owner_id): VARCHAR
+    name: VARCHAR
+    description: VARCHAR
+    created_at: TIMESTAMP
+    expiration_date: TIMESTAMP
+    --
+    allow_multi_redemption: BOOLEAN
+    max_redemptions_per_user: INTEGER
+    max_assignments_per_user: INTEGER
+    code_pattern: VARCHAR
+    total_code_count: INTEGER
+    is_active: BOOLEAN
+}
+
+TABLE(Coupons) {
+    PK(code): VARCHAR(50)
+    FK(book_id): VARCHAR
+    FK(assigned_user_id): VARCHAR
+    state: VARCHAR(20)
+    --
+    redemption_count: INTEGER
+    max_redemptions: INTEGER
+    --
+    is_locked: BOOLEAN
+    locked_until: TIMESTAMP
+    --
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+TABLE(RedemptionHistory) {
+    PK(history_id): UUID
+    FK(code): VARCHAR
+    FK(user_id): VARCHAR
+    FK(book_id): VARCHAR
+    redeemed_at: TIMESTAMP
+    redemption_metadata: JSONB
+}
+
+TABLE(UserPools) {
+    PK(pool_id): VARCHAR
+    name: VARCHAR
+    description: TEXT
+    FK(created_by): VARCHAR
+    is_active: BOOLEAN
+    created_at: TIMESTAMP
+    updated_at: TIMESTAMP
+}
+
+TABLE(pool_users) {
+    PK(FK(pool_id)): VARCHAR
+    PK(FK(user_id)): VARCHAR
+    added_at: TIMESTAMP
+}
+
+' Relationships
+Users "1" -- "0..*" Books : owns >
+Books "1" -- "0..*" Coupons : contains >
+Users "1" -- "0..*" Coupons : assigned to >
+Coupons "1" -- "0..*" RedemptionHistory : logged in >
+Users "1" -- "0..*" UserPools : creates >
+UserPools "0..*" -- "0..*" Users : contains >
+UserPools "1" -- "0..*" pool_users : via >
+Users "1" -- "0..*" pool_users : via >
+
+note right of Users
+  Authentication & Authorization:
+  - Passwords hashed with bcrypt
+  - JWT token-based auth
+  - Role-based access (ADMIN/USER)
+  - Email uniqueness enforced
+  
+  Indexes:
+  - user_id (PK)
+  - email (UNIQUE)
+end note
+
+note right of Coupons
+  State Machine:
+  UNASSIGNED → ASSIGNED
+  ASSIGNED → LOCKED
+  LOCKED → REDEEMED
+  LOCKED → ASSIGNED (unlock)
+  
+  Concurrency Control:
+  - PostgreSQL advisory locks
+  - is_locked & locked_until for visibility
+  - No locked_by_user_id (uses advisory locks)
+  
+  Multi-Redemption:
+  - redemption_count tracks usage
+  - max_redemptions per coupon
+  
+  Indexes:
+  - code (PK)
+  - book_id
+  - assigned_user_id
+  - state
+end note
+
+note right of Books
+  Configuration per book:
+  - Multi-redemption allowed
+  - Max redemptions per user
+  - Max assignments per user
+  - Expiration date
+  - Active/inactive status
+end note
+
+note right of UserPools
+  Bulk Distribution:
+  - Group users into pools
+  - Distribute coupons to entire pool
+  - Track pool membership
+  - Creator relationship
+  
+  Used by:
+  - POST /api/v1/pools/{pool_id}/assign
+  - Supports "equal" and "random" modes
+end note
+
+note bottom of pool_users
+  Many-to-Many Association:
+  - Links Users to UserPools
+  - Tracks when user added to pool
+  - Cascade delete on both sides
+end note
+
+@enduml

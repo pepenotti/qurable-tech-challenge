@@ -1,0 +1,55 @@
+@startuml AWS Deployment
+!include <awslib/AWSCommon>
+!include <awslib/NetworkingContentDelivery/CloudFront>
+!include <awslib/Storage/SimpleStorageService>
+!include <awslib/NetworkingContentDelivery/ElasticLoadBalancingApplicationLoadBalancer>
+!include <awslib/Containers/ElasticContainerService>
+!include <awslib/Database/RDS>
+!include <awslib/ManagementGovernance/CloudWatch>
+
+skinparam backgroundColor #FEFEFE
+
+title AWS Production Deployment Architecture
+
+actor "End Users" as Users
+
+CloudFront(cdn, "CloudFront", "CDN")
+SimpleStorageService(s3, "S3 Bucket", "Static Website")
+ElasticLoadBalancingApplicationLoadBalancer(alb, "Application LB", "HTTPS/SSL")
+ElasticContainerService(ecs, "ECS Fargate", "API Containers\nAuto-scaling")
+RDS(rds, "RDS PostgreSQL", "Multi-AZ\nRead Replicas")
+CloudWatch(cw, "CloudWatch", "Logs & Metrics")
+
+Users -down-> cdn : HTTPS\n(Frontend)
+Users -down-> alb : HTTPS\n(API)
+cdn -down-> s3 : Serve\nstatic files
+s3 -down-> alb : API calls
+alb -down-> ecs : Route\ntraffic
+ecs -down-> rds : SQL\nqueries
+ecs -right-> cw : Send\nlogs
+
+note right of cdn
+  Frontend Hosting:
+  • Global CDN distribution
+  • HTTPS with ACM
+  • Cached assets
+  • React/Vue/Angular app
+end note
+
+note right of ecs
+  Scalability:
+  • Serverless containers
+  • Auto-scale on CPU/memory
+  • Zero-downtime deploys
+  • Blue/Green capable
+end note
+
+note right of rds
+  High Availability:
+  • Automatic failover
+  • Read replicas for scale
+  • Automated backups
+  • Point-in-time recovery
+end note
+
+@enduml

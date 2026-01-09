@@ -1,0 +1,49 @@
+@startuml Lock Coupon
+skinparam backgroundColor #FEFEFE
+skinparam sequenceMessageAlign center
+
+title Lock Coupon for Redemption (High-Level)
+
+actor User
+participant "API" as API
+database "Database" as DB
+
+User -> API : POST /coupons/lock/{code}\n{user_id}
+activate API
+
+API -> DB : BEGIN TRANSACTION
+activate DB
+
+API -> DB : SELECT coupon\nWHERE code = ?\n**FOR UPDATE**
+note right
+  Row locked until
+  transaction ends
+end note
+
+DB --> API : Coupon (locked)
+
+API -> API : Validate:\n- State = ASSIGNED?\n- User owns coupon?
+
+alt Validation Failed
+    API -> DB : ROLLBACK
+    API --> User : 400/403 Error
+else Validation Passed
+    API -> DB : UPDATE coupon\nSET state='LOCKED'\nSET lock_expires_at=NOW()+5min
+    
+    API -> DB : COMMIT
+    deactivate DB
+    
+    API --> User : 200 OK\n{state: "LOCKED", expires_at: ...}
+end
+deactivate API
+
+note over User, DB
+  **Key Points for Interview:**
+  1. Temporary lock with expiration
+  2. User ownership verification
+  3. State machine validation (FSM)
+  4. Pessimistic locking for safety
+  5. Can be unlocked or progressed to REDEEMED
+end note
+
+@enduml

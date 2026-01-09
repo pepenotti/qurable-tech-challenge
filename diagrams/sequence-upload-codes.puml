@@ -1,0 +1,56 @@
+@startuml Upload Code List
+skinparam backgroundColor #FEFEFE
+skinparam sequenceMessageAlign center
+
+title Upload Custom Code List (High-Level)
+
+actor Admin
+participant "API" as API
+database "Database" as DB
+
+Admin -> API : POST /books/{book_id}/codes/upload\n{codes: ["CODE1", "CODE2", ...]}
+activate API
+
+API -> DB : BEGIN TRANSACTION
+activate DB
+
+API -> DB : SELECT book\n**FOR UPDATE**
+note right
+  Lock book to prevent
+  concurrent uploads
+end note
+
+DB --> API : Book (locked)
+
+API -> API : Validate:\n- Book exists?\n- Codes format valid?\n- No duplicates?
+
+alt Validation Failed
+    API -> DB : ROLLBACK
+    API --> Admin : 400/404/409 Error
+else Validation Passed
+    API -> DB : **BULK INSERT** coupons\nstate='UNASSIGNED'
+    note right
+      Single query for all codes
+      Much faster than N inserts
+      (100 codes: 50ms vs 5000ms)
+    end note
+    
+    API -> DB : UPDATE book\ntotal_code_count += N
+    
+    API -> DB : COMMIT
+    deactivate DB
+    
+    API --> Admin : 201 Created\n{count: N, codes: [...]}
+end
+deactivate API
+
+note over Admin, DB
+  **Key Points for Interview:**
+  1. **Bulk operation** for performance
+  2. **Validation** before insert
+  3. **Atomic transaction** (all or nothing)
+  4. **Duplicate detection** (globally unique)
+  5. Alternative to auto-generation
+end note
+
+@enduml

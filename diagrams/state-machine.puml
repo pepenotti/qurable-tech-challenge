@@ -1,0 +1,66 @@
+@startuml State Machine
+!define STATE(x) state x
+
+skinparam backgroundColor #FEFEFE
+skinparam state {
+    BackgroundColor LightBlue
+    BorderColor Navy
+    ArrowColor Navy
+}
+
+title Coupon Lifecycle - State Machine
+
+[*] --> UNASSIGNED : Code Generated
+
+UNASSIGNED --> ASSIGNED : assign(user_id)
+UNASSIGNED : Entry: code created
+UNASSIGNED : State: Available for assignment
+
+ASSIGNED --> LOCKED : lock(user_id)
+ASSIGNED --> ASSIGNED : reassign(user_id)
+ASSIGNED : Entry: user assigned
+ASSIGNED : State: Reserved for user
+ASSIGNED : Exit: ownership validated
+
+LOCKED --> REDEEMED : redeem(user_id)
+LOCKED --> ASSIGNED : unlock(user_id)
+LOCKED : Entry: redemption started
+LOCKED : State: Temporarily locked
+LOCKED : Duration: Configurable timeout
+LOCKED : Exit: validate user & expiry
+
+REDEEMED --> [*]
+REDEEMED : Entry: redemption completed
+REDEEMED : State: Permanent
+REDEEMED : Action: Log to history
+REDEEMED : Count: Increment redemption_count
+
+note right of UNASSIGNED
+  Initial state after:
+  - Code generation
+  - Code upload
+end note
+
+note right of ASSIGNED
+  Validations:
+  - User exists
+  - Max assignments not exceeded
+  - Book is active
+end note
+
+note right of LOCKED
+  Timeout mechanism:
+  - locked_until timestamp
+  - Auto-unlock on expiry
+  - Prevents deadlocks
+  - PostgreSQL advisory locks
+end note
+
+note right of REDEEMED
+  Final state:
+  - Cannot be reversed
+  - Audit trail created
+  - Multi-redemption check
+end note
+
+@enduml
