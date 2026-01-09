@@ -8,117 +8,121 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 <!-- _class: lead -->
 
-# 🎫 Coupon Book Service
+# 🎫 Servicio de Cupones (Coupon Book)
 
-### Full Implementation of Design Challenge
+### Implementación Completa del Desafío Técnico
 
-**Challenge**: Design API + Pseudoc## 🚀 Production Readiness & Deployment Options
+**Desafío**: Diseñar API + Pseudocódigo + Arquitectura  
+**Entregado**: Aplicación funcionando completamente
 
-### Deployment Approaches
-
-**1. Monolithic (Simple Start)**
-- ECS Fargate or AWS App Runner
-- RDS PostgreSQL Multi-AZ
-- CloudFront + S3 for frontend
-- ✅ Simple, cost-effective, handles significant load
-
-**2. Microservices (Scale & Teams)**
-- Auth Service + Coupon Service + Redemption Service
-- Independent scaling and deployment
-- Event-driven communication (SQS/EventBridge)
-- ✅ Better for large orgs, independent teams
-
-**3. Serverless (Variable Load)**
-- Lambda functions + API Gateway
-- Aurora Serverless or DynamoDB
-- Auto-scale to zero, pay per request
-- ✅ Perfect for spiky traffic, minimal ops
-
-**Production Additions** (any approach):
-- CloudWatch metrics & X-Ray tracing
-- Secrets Manager for credentials
-- Rate limiting & DDoS protection
-- Database backups & DR plan
-
-**Architecture is deployment-agnostic** - clean boundaries enable any model 🎯e  
-**Delivered**: Complete working application
-
-**Built with**: FastAPI • Vue 3 • PostgreSQL • Docker
+**Construido con**: FastAPI • Vue 3 • PostgreSQL • Docker
 
 ---
 
-## 📋 The Challenge
+## 🚀 Preparación para Producción & Opciones de Deployment
 
-**What was asked**: API design + pseudocode + architecture
+### Enfoques de Deployment
 
-**Core Requirements**:
-- ✅ Coupon books with code upload/generation
-- ✅ Random coupon assignment with concurrency handling
-- ✅ Lock mechanism for redemption
-- ✅ Multi-redemption support (book level)
-- ✅ Max assignments per user (book level)
+**1. Monolítico (Inicio Simple)**
+- ECS Fargate o AWS App Runner
+- RDS PostgreSQL Multi-AZ
+- CloudFront + S3 para frontend
+- ✅ Simple, cost-effective, maneja carga significativa
 
-**Key Technical Challenges**:
-1. Database locking and state management
-2. Randomness logic under concurrent load
-3. Prevent race conditions and data integrity
+**2. Microservicios (Escala & Equipos)**
+- Auth Service + Coupon Service + Redemption Service
+- Scaling y deployment independientes
+- Comunicación event-driven (SQS/EventBridge)
+- ✅ Mejor para organizaciones grandes, equipos independientes
 
-**What I delivered**: Fully working implementation (not just design docs) ⭐
+**3. Serverless (Carga Variable)**
+- Lambda functions + API Gateway
+- Aurora Serverless o DynamoDB
+- Auto-scale a cero, pago por request
+- ✅ Perfecto para tráfico con picos, ops mínimas
+
+**Adiciones para Producción** (cualquier enfoque):
+- Métricas de CloudWatch & tracing con X-Ray
+- Secrets Manager para credenciales
+- Rate limiting & protección DDoS
+- Backups de database & plan de DR
+
+**La arquitectura es deployment-agnostic** - boundaries limpios permiten cualquier modelo 🎯
+
+---
+
+## 📋 El Desafío
+
+**Lo que se pidió**: Diseño de API + pseudocódigo + arquitectura
+
+**Requerimientos Core**:
+- ✅ Coupon books con upload/generación de códigos
+- ✅ Asignación random de cupones con manejo de concurrencia
+- ✅ Mecanismo de lock para redención
+- ✅ Soporte multi-redención (a nivel de book)
+- ✅ Máximo de asignaciones por usuario (a nivel de book)
+
+**Desafíos Técnicos Clave**:
+1. Locking de database y manejo de estado
+2. Lógica de randomness bajo carga concurrente
+3. Prevenir race conditions e integridad de datos
+
+**Lo que entregué**: Implementación completamente funcionando (no solo docs de diseño) ⭐
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Why? |
+| Capa | Tecnología | ¿Por qué? |
 |-------|-----------|------|
-| **Backend** | FastAPI + Python 3.11 | Async/await, auto docs, type safety |
+| **Backend** | FastAPI + Python 3.11 | Async/await, docs automáticos, type safety |
 | **Database** | PostgreSQL 15 | ACID, advisory locks, row locking |
-| **ORM** | SQLAlchemy 2.0 (async) | Modern async patterns |
-| **Frontend** | Vue 3 + Pinia | Reactive, lightweight, modern |
-| **Infrastructure** | Docker Compose | Consistent environments |
+| **ORM** | SQLAlchemy 2.0 (async) | Patrones async modernos |
+| **Frontend** | Vue 3 + Pinia | Reactivo, liviano, moderno |
+| **Infraestructura** | Docker Compose | Ambientes consistentes |
 
-**Every choice was deliberate** - optimized for concurrency, data integrity, and developer experience.
+**Cada elección fue deliberada** - optimizado para concurrencia, integridad de datos y developer experience.
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗️ Resumen de Arquitectura
 
 ![Architecture Diagram](./diagrams/exported/png/System%20Architecture.png)
 
-**3-Tier Design**:
+**Diseño de 3 Capas**:
 - Frontend: Vue 3 SPA
-- Backend: FastAPI with async services
-- Data: PostgreSQL with connection pooling
+- Backend: FastAPI con servicios async
+- Data: PostgreSQL con connection pooling
 
-**Deployment Flexibility**:
-- 📦 **Monolithic**: ECS/App Runner (simple, cost-effective)
-- 🔷 **Microservices**: Separate auth, coupon, redemption services
+**Flexibilidad de Deployment**:
+- 📦 **Monolítico**: ECS/App Runner (simple, cost-effective)
+- 🔷 **Microservicios**: Auth, coupon y redemption services separados
 - ⚡ **Serverless**: Lambda + API Gateway + Aurora Serverless
 
-**Key Principle**: Stateless, service-separated, deployment-agnostic
+**Principio Clave**: Stateless, servicios separados, deployment-agnostic
 
 ---
 
-## 🗄️ Database Schema
+## 🗄️ Schema de Database
 
 ![Database Schema](./diagrams/exported/png/Database%20Schema.png)
 
 ---
 
-## 📊 Database Schema (Detail)
+## 📊 Schema de Database (Detalle)
 
-**6 Tables**:
-- **Users**: Authentication (JWT, bcrypt, roles)
-- **Books**: Coupon book configuration
-- **Coupons**: State machine core (14 fields)
+**6 Tablas**:
+- **Users**: Autenticación (JWT, bcrypt, roles)
+- **Books**: Configuración de coupon books
+- **Coupons**: Core del state machine (14 campos)
 - **RedemptionHistory**: Audit trail
-- **UserPools**: Bulk distribution groups
-- **pool_users**: Many-to-many association
+- **UserPools**: Grupos de distribución bulk
+- **pool_users**: Asociación many-to-many
 
-**Design Highlights**:
-- Proper indexes on foreign keys and state
-- CASCADE deletes where appropriate
-- JSONB for flexible metadata
+**Highlights de Diseño**:
+- Indexes apropiados en foreign keys y estado
+- DELETE CASCADE donde corresponde
+- JSONB para metadata flexible
 
 ---
 
@@ -128,7 +132,7 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 ---
 
-## 🔄 State Machine (Explained)
+## 🔄 State Machine (Explicado)
 
 ```
 UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
@@ -136,64 +140,64 @@ UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
               └───────────┘ (unlock on timeout)
 ```
 
-**Key Transitions**:
-- **Assign**: Claim a coupon (with validation)
-- **Lock**: Prepare for redemption (5 min timeout)
-- **Redeem**: Finalize (permanent, logged)
-- **Unlock**: Automatic timeout (prevents deadlocks)
+**Transiciones Clave**:
+- **Assign**: Reclamar un cupón (con validación)
+- **Lock**: Preparar para canje (timeout 5 min)
+- **Redeem**: Finalizar (permanente, logged)
+- **Unlock**: Timeout automático (previene deadlocks)
 
-**Every transition is validated** - prevents all edge cases
+**Cada transición es validada** - previene todos los edge cases
 
 ---
 
-## ✨ Key Features
+## ✨ Features Clave
 
-### Required (Challenge Specs)
-- � **Random Assignment** - With SELECT FOR UPDATE SKIP LOCKED
-- ♻️ **Multi-Redemption** - Configurable per book
-- � **Max Assignments** - Per user, per book
-- 📤 **Code Upload/Generation** - CSV upload or pattern-based
-- 🔒 **Lock Mechanism** - Temporary lock before redeem
+### Requeridos (Specs del Desafío)
+- 🎲 **Asignación Random** - Con SELECT FOR UPDATE SKIP LOCKED
+- ♻️ **Multi-Redención** - Configurable por book
+- 🔢 **Max Asignaciones** - Por usuario, por book
+- 📤 **Upload/Generación de Códigos** - Upload CSV o basado en pattern
+- 🔒 **Mecanismo de Lock** - Lock temporal antes de canjear
 - 🔄 **State Machine** - UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
 
-### Bonus (Production Additions)
-- 🔐 **JWT Authentication** - Role-based access (ADMIN/USER)
-- 🎨 **Vue 3 Frontend** - Full UI implementation
-- 📦 **User Pools** - Bulk distribution (equal/random modes)
-- 📝 **Audit Trail** - Complete redemption history
-- ✅ **Test Suite** - Comprehensive validation scripts
+### Bonus (Adiciones de Producción)
+- 🔐 **Autenticación JWT** - Acceso basado en roles (ADMIN/USER)
+- 🎨 **Frontend Vue 3** - Implementación completa de UI
+- 📦 **User Pools** - Distribución bulk (modos equal/random)
+- 📝 **Audit Trail** - Historial completo de canjes
+- ✅ **Test Suite** - Scripts de validación comprehensivos
 
-**From design doc to working product** 🚀
+**De doc de diseño a producto funcionando** 🚀
 
 ---
 
-## 📊 Challenge Requirements vs Delivery
+## 📊 Requerimientos del Desafío vs Entrega
 
-| Requirement | Asked For | Delivered |
+| Requerimiento | Se Pidió | Entregado |
 |------------|-----------|-----------|
-| System Architecture | High-level design | ✅ + Detailed diagrams |
-| Database Design | High-level schema | ✅ + Full implementation |
-| API Endpoints | Design + formats | ✅ + Working FastAPI |
-| Pseudocode | 3 key operations | ✅ + Production code |
-| Deployment Strategy | High-level plan | ✅ + Docker + AWS docs |
-| **Frontend** | ❌ Not required | ✅ Full Vue 3 app |
-| **Authentication** | ❌ Not specified | ✅ JWT + RBAC |
-| **Testing** | ❌ Not required | ✅ Test suite |
-| **Documentation** | Basic | ✅ 11 docs + 8 diagrams |
+| System Architecture | Diseño high-level | ✅ + Diagramas detallados |
+| Database Design | Schema high-level | ✅ + Implementación completa |
+| API Endpoints | Diseño + formatos | ✅ + FastAPI funcionando |
+| Pseudocódigo | 3 operaciones clave | ✅ + Código de producción |
+| Deployment Strategy | Plan high-level | ✅ + Docker + docs AWS |
+| **Frontend** | ❌ No requerido | ✅ App Vue 3 completa |
+| **Autenticación** | ❌ No especificado | ✅ JWT + RBAC |
+| **Testing** | ❌ No requerido | ✅ Test suite |
+| **Documentación** | Básica | ✅ 11 docs + 8 diagramas |
 
-**I turned a design exercise into a production-ready demo** 💪
+**Convertí un ejercicio de diseño en un demo production-ready** 💪
 
 ---
 
-## ⚡ Concurrency Solution
+## ⚡ Solución de Concurrencia
 
-**The Problem**: 1000 users, 100 codes left. No duplicates. No race conditions.
+**El Problema**: 1000 usuarios, 100 códigos restantes. Sin duplicados. Sin race conditions.
 
-**The Solution**:
+**La Solución**:
 ```python
 # PostgreSQL advisory locks + SKIP LOCKED
 async with session.begin():
-    # 1. Acquire book-level advisory lock
+    # 1. Adquirir lock a nivel de book (advisory lock)
     await session.execute(text("SELECT pg_advisory_lock(:book_id)"), 
                           {"book_id": book_hash})
     
@@ -205,197 +209,197 @@ async with session.begin():
         .limit(1)
     )
     
-    # 3. Assign atomically
+    # 3. Asignar atómicamente
     coupon.state = 'ASSIGNED'
     coupon.assigned_user_id = user_id
 ```
 
-**Result**: Scales perfectly under concurrent load 🚀
+**Resultado**: Escala perfectamente bajo carga concurrente 🚀
 
 ---
 
-## 🧪 Concurrency Demo
+## 🧪 Demo de Concurrencia
 
 ![Sequence Diagram](./diagrams/exported/png/Assign%20Random%20Coupon.png)
 
-**Validated with concurrent test scripts** - 100 simultaneous requests ✅
+**Validado con scripts de test concurrentes** - 100 requests simultáneos ✅
 
 ---
 
-## 💻 API Highlights
+## 💻 Highlights de la API
 
-**Modern Python Patterns**:
-- ✅ Async/await everywhere
-- ✅ Pydantic for validation
-- ✅ Service layer for business logic
-- ✅ Custom exceptions → HTTP codes
-- ✅ Comprehensive error messages
-- ✅ OpenAPI docs at `/docs`
+**Patrones Modernos de Python**:
+- ✅ Async/await en todas partes
+- ✅ Pydantic para validación
+- ✅ Service layer para business logic
+- ✅ Excepciones custom → códigos HTTP
+- ✅ Mensajes de error comprehensivos
+- ✅ Docs OpenAPI en `/docs`
 
-**Code Quality**:
-- Type hints throughout
-- Clean separation of concerns
-- Testable and maintainable
-
----
-
-## 🎨 Frontend Demo
-
-**Live Demo Time!** 
-
-**Flow**:
-1. Login as admin
-2. Create a coupon book
-3. Upload codes (CSV)
-4. Distribute to user pool
-5. Switch to user account
-6. Lock and redeem coupon
-
-**UX Features**:
-- Toast notifications (non-blocking)
-- Real-time state updates
-- Lock countdown timers
-- Color-coded feedback
+**Calidad de Código**:
+- Type hints en todo
+- Separación limpia de concerns
+- Testeable y mantenible
 
 ---
 
-## ✅ Testing & Quality
+## 🎨 Demo del Frontend
 
-**Test Coverage**:
-- `showcase_tests.sh` - Comprehensive integration tests
-- Concurrent request simulation
-- Error case validation
-- State machine edge cases
+**¡Momento de Demo en Vivo!** 
 
-**Error Handling**:
-- Database exceptions → user-friendly messages
-- Validation before DB hits
-- Actionable error responses
+**Flujo**:
+1. Login como admin
+2. Crear un coupon book
+3. Upload de códigos (CSV)
+4. Distribuir a user pool
+5. Cambiar a cuenta de usuario
+6. Lockear y canjear cupón
 
-**Documentation**:
-- 8 PlantUML diagrams
-- Comprehensive README files
-- Inline code documentation
-
----
-
-## 🎓 Lessons Learned
-
-**Technical Insights**:
-1. PostgreSQL concurrency features are incredibly powerful
-2. State machines make business logic bulletproof
-3. FastAPI's async capabilities shine in I/O workloads
-4. Good documentation = good code
-
-**What I'd Improve**:
-- Add comprehensive logging earlier
-- Set up CI/CD from day one
-- Consider Redis for distributed locking
-- Add more frontend unit tests
+**Features de UX**:
+- Notificaciones toast (non-blocking)
+- Updates de estado en tiempo real
+- Timers de countdown para locks
+- Feedback con código de colores
 
 ---
 
-## 🚀 Production Readiness
+## ✅ Testing & Calidad
 
-**Infrastructure** (Ready to deploy):
+**Cobertura de Tests**:
+- `showcase_tests.sh` - Tests de integración comprehensivos
+- Simulación de requests concurrentes
+- Validación de casos de error
+- Edge cases del state machine
+
+**Manejo de Errores**:
+- Excepciones de database → mensajes user-friendly
+- Validación antes de hits a DB
+- Respuestas de error accionables
+
+**Documentación**:
+- 8 diagramas PlantUML
+- READMEs comprehensivos
+- Documentación inline en código
+
+---
+
+## 🎓 Lecciones Aprendidas
+
+**Insights Técnicos**:
+1. Los features de concurrencia de PostgreSQL son increíblemente poderosos
+2. Los state machines hacen la business logic bulletproof
+3. Las capacidades async de FastAPI brillan en workloads de I/O
+4. Buena documentación = buen código
+
+**Lo que Mejoraría**:
+- Agregar logging comprehensivo desde el inicio
+- Setup de CI/CD desde el día uno
+- Considerar Redis para locking distribuido
+- Agregar más unit tests en el frontend
+
+---
+
+## 🚀 Preparación para Producción
+
+**Infraestructura** (Lista para deploy):
 - AWS ECS Fargate (backend)
 - RDS PostgreSQL Multi-AZ (database)
 - CloudFront + S3 (frontend)
 - Application Load Balancer
 
-**Still Needed**:
-- CloudWatch metrics & logs
+**Aún Necesario**:
+- Métricas & logs de CloudWatch
 - AWS Secrets Manager
 - Rate limiting
 - SSL everywhere
-- Database backups
-- Disaster recovery plan
+- Backups de database
+- Plan de disaster recovery
 
-**The hard part (business logic) is done** ✅
+**La parte difícil (business logic) está hecha** ✅
 
 ---
 
-## 📊 Project Metrics
+## 📊 Métricas del Proyecto
 
-**Code**:
-- Backend: ~3,000 lines of Python
-- Frontend: ~2,000 lines of Vue/TypeScript
-- Database: 6 tables, 8 relationships
+**Código**:
+- Backend: ~3,000 líneas de Python
+- Frontend: ~2,000 líneas de Vue/TypeScript
+- Database: 6 tablas, 8 relaciones
 - API: 20+ endpoints
 
-**Documentation**:
-- 11 markdown files (organized)
-- 8 PlantUML diagrams
-- Comprehensive getting started guide
+**Documentación**:
+- 11 archivos markdown (organizados)
+- 8 diagramas PlantUML
+- Getting started guide comprehensivo
 
-**Time Investment**: [X hours]
-- Implementation: [Y%]
+**Inversión de Tiempo**: [X horas]
+- Implementación: [Y%]
 - Testing & Polish: [Z%]
-- Documentation: [W%]
+- Documentación: [W%]
 
 ---
 
 <!-- _class: lead -->
 
-## 🙏 Thank You!
+## 🙏 ¡Gracias!
 
-### Questions?
+### ¿Preguntas?
 
-**GitHub**: [Your repo link]
-**Email**: [Your email]
+**GitHub**: [Tu link de repo]
+**Email**: [Tu email]
 
-**Try it yourself**:
+**Pruébalo vos mismo**:
 ```bash
 git clone [repo]
 cd qble/coupon-service
 docker-compose up -d
 cd frontend && npm install && npm run dev
-# Open http://localhost:5173
+# Abrir http://localhost:5173
 ```
 
-**Ready in under 5 minutes** 🚀
+**Listo en menos de 5 minutos** 🚀
 
 ---
 
-## 📚 Backup Slides
+## 📚 Slides de Backup
 
-(Additional technical details if needed)
+(Detalles técnicos adicionales si son necesarios)
 
 ---
 
-## Redemption Flow Detail
+## Detalle del Flujo de Canje
 
 ![Redeem Coupon](./diagrams/exported/png/Redeem%20Coupon.png)
 
-**Key Steps**:
-1. Validate lock ownership
-2. Check lock expiration
-3. Verify redemption count
-4. Update state atomically
-5. Log to RedemptionHistory
-6. Commit or rollback
+**Pasos Clave**:
+1. Validar ownership del lock
+2. Chequear expiración del lock
+3. Verificar contador de canjes
+4. Actualizar estado atómicamente
+5. Log a RedemptionHistory
+6. Commit o rollback
 
 ---
 
-## AWS Deployment Architecture
+## Arquitectura de Deployment en AWS
 
 ![AWS Deployment](./diagrams/exported/png/AWS%20Deployment.png)
 
-**Production Setup**:
-- Auto-scaling backend
-- Multi-AZ database
-- CloudWatch monitoring
-- VPC security
+**Setup de Producción**:
+- Backend con auto-scaling
+- Database Multi-AZ
+- Monitoring con CloudWatch
+- Seguridad VPC
 
 ---
 
 <!-- _class: lead -->
 
-# Questions?
+# ¿Preguntas?
 
-I'm happy to dive deeper into any aspect:
-- Architecture decisions
-- Implementation details
-- Trade-offs and alternatives
-- Scaling considerations
-- Production deployment
+Estoy disponible para profundizar en cualquier aspecto:
+- Decisiones de arquitectura
+- Detalles de implementación
+- Trade-offs y alternativas
+- Consideraciones de scaling
+- Deployment a producción

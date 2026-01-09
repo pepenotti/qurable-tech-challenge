@@ -1,6 +1,10 @@
 # 🚀 Getting Started Guide
 
-Welcome to the Coupon Book Service! This guide will help you set up and run the complete full-stack application.
+> **Complete setup, configuration, and troubleshooting guide for the Coupon Book Service**
+
+This guide covers everything you need to get the full-stack application running on your local machine. For a high-level overview and architecture details, see the [main README](./README.md).
+
+---
 
 ## ✨ What You're Getting
 
@@ -18,17 +22,23 @@ A production-ready coupon management system featuring:
 
 ## 🚀 Quick Start
 
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 18+ (for frontend development)
+
 ### Start the Application
 
 **Terminal 1 - Backend:**
 ```bash
-cd coupon-service
 docker-compose up -d
+
+# Initialize database with mock data
+docker-compose exec app python init_db.py --drop --with-mock-data
 ```
 
 **Terminal 2 - Frontend:**
 ```bash
-cd coupon-service/frontend
+cd frontend
 npm install  # First time only
 npm run dev
 ```
@@ -177,7 +187,7 @@ npm run lint
 ## 📂 Project Structure
 
 ```
-coupon-service/
+qurable-tech-challenge/
 ├── app/                          # Backend application
 │   ├── api/v1/                   # API endpoints
 │   │   ├── auth.py              # Authentication & user management
@@ -229,7 +239,10 @@ coupon-service/
 ├── init_db.py                    # Database initialization script
 ├── showcase_tests.sh             # Comprehensive test suite
 ├── docker-compose.yml            # Container orchestration
-└── requirements.txt              # Python dependencies
+├── Dockerfile                    # Backend container
+├── requirements.txt              # Python dependencies
+├── alembic.ini                   # Database migrations config
+└── README.md                     # Project overview
 ```
 
 ---
@@ -440,9 +453,9 @@ Full interactive API docs available at:
 ## 🤝 Documentation Resources
 
 ### Getting Started
-- **This Guide** - Setup and configuration
-- **[Main README](../README.md)** - Project overview
-- **[Challenge Summary](../../CHALLENGE_SUMMARY.md)** - Original requirements
+- **This Guide** - Complete setup, configuration, and troubleshooting
+- **[Main README](./README.md)** - Project overview, architecture, features
+- **[Challenge Summary](./docs/CHALLENGE_SUMMARY.md)** - Original requirements
 
 ### Feature Documentation
 - **[Showcase Guide](./docs/SHOWCASE_GUIDE.md)** - Demo walkthrough and testing
@@ -452,7 +465,7 @@ Full interactive API docs available at:
 ### Technical Documentation
 - **[Authentication Guide](./docs/AUTHENTICATION_GUIDE.md)** - Auth implementation
 - **[Implementation Status](./docs/IMPLEMENTATION_STATUS.md)** - Complete feature overview
-- **[Architecture Diagrams](../../diagrams/README.md)** - Visual system design
+- **[Architecture Diagrams](./docs/diagrams/README.md)** - Visual system design
 
 ### Interactive API Docs
 - **Swagger UI**: http://localhost:8000/docs (try it out live!)

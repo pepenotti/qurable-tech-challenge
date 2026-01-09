@@ -20,60 +20,45 @@ This project implements a **complete coupon book service** as specified in the t
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Docker & Docker Compose
-- Node.js 18+ (for frontend development)
+> **Full setup instructions available in [GETTING_STARTED.md](./GETTING_STARTED.md)**
 
-### 1. Start Backend (FastAPI + PostgreSQL)
 ```bash
+# 1. Start backend
 docker-compose up -d
-
-# Initialize database with mock data
 docker-compose exec app python init_db.py --drop --with-mock-data
+
+# 2. Start frontend (in another terminal)
+cd frontend && npm install && npm run dev
+
+# 3. Open http://localhost:5173
+# Login: admin@example.com / admin123 (or alice@example.com / demo123)
 ```
 
-Backend will be available at: `http://localhost:8000`
-API docs: `http://localhost:8000/docs`
+**URLs:**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
 
-### 2. Start Frontend (Vue 3)
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Frontend will be available at: `http://localhost:5173`
-
-### 3. Login Credentials
-
-**Admin Account:**
-- Email: `admin@example.com`
-- Password: `admin123`
-
-**Regular Users:**
-- `alice@example.com` / `demo123`
-- `bob@example.com` / `demo123`
-- `charlie@example.com` / `demo123`
-- `diana@example.com` / `demo123`
-- `eve@example.com` / `demo123`
+**For detailed setup, configuration, and troubleshooting:** see [GETTING_STARTED.md](./GETTING_STARTED.md)
 
 ## 📚 Documentation
 
-### Quick Start
-- **[⚡ Getting Started](./GETTING_STARTED.md)** - Setup & installation guide
+### Setup & Configuration
+- **[⚡ Getting Started](./GETTING_STARTED.md)** - Complete setup guide, troubleshooting, configuration
 
-### Core Documentation  
+### Features & Usage
 - **[📖 Showcase Guide](./docs/SHOWCASE_GUIDE.md)** - Complete feature walkthrough
 - **[🔄 State Flow](./docs/COUPON_STATE_FLOW.md)** - State machine documentation
 - **[📋 Feature Checklist](./docs/FEATURE_CHECKLIST.md)** - Testing checklist
 
-### Technical Documentation
-- **[🔐 Authentication](./docs/AUTHENTICATION_GUIDE.md)** - Auth setup & usage
-- **[📊 Implementation Status](./docs/IMPLEMENTATION_STATUS.md)** - What's built & production readiness
+### Technical Deep Dives
+- **[🔐 Authentication](./docs/AUTHENTICATION_GUIDE.md)** - Auth implementation details
+- **[📊 Implementation Status](./docs/IMPLEMENTATION_STATUS.md)** - Production readiness
 - **[🏗️ Architecture Diagrams](./docs/diagrams/README.md)** - System architecture & sequence diagrams
 
-### Challenge Requirements
-- **[🎯 Challenge Summary](./CHALLENGE_SUMMARY.md)** - Original technical challenge specification
+### Challenge Context
+- **[🎯 Challenge Summary](./docs/CHALLENGE_SUMMARY.md)** - Original requirements
+- **[📋 Requirements vs Delivery](./docs/REQUIREMENTS_VS_DELIVERY.md)** - What was asked vs delivered
 
 ## 🎭 Showcase Mode
 
