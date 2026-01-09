@@ -2,46 +2,73 @@
 skinparam backgroundColor #FEFEFE
 skinparam sequenceMessageAlign center
 
-title Redeem Coupon - Permanent Operation (High-Level)
+title Redeem Coupon - With Advisory Lock Protection
 
 actor User
 participant "API" as API
-database "Database" as DB
+participant "RedemptionService" as Service
+database "PostgreSQL" as DB
 
 User -> API : POST /coupons/redeem/{code}\n{user_id, metadata}
 activate API
 
-API -> DB : BEGIN TRANSACTION
-activate DB
+API -> Service : redeem_coupon(code, user_id)
+activate Service
 
-API -> DB : SELECT coupon + book config\n**FOR UPDATE**
+Service -> DB : **pg_try_advisory_lock(hashtext(code))**
+note right
+  Advisory lock prevents
+  concurrent redemptions
+  on same code
+end note
 
-DB --> API : Coupon + Settings
-
-API -> API : Validate:\n- User owns coupon?\n- Not expired?\n- Under redemption limit?
-
-alt Validation Failed
-    API -> DB : ROLLBACK
-    API --> User : 400/403 Error
-else Validation Passed
-    API -> DB : UPDATE coupon\nSET state='REDEEMED'\nINC redemption_count
+alt Lock Acquired Failed
+    DB --> Service : FALSE (lock busy)
+    Service --> API : CouponLockedException\n"Concurrent redemption"
+    API --> User : 409 Conflict
+else Lock Acquired Success
+    DB --> Service : TRUE (lock acquired)
     
-    API -> DB : INSERT redemption_history\n(audit trail)
+    Service -> DB : BEGIN TRANSACTION
+    activate DB
     
-    API -> DB : COMMIT
-    deactivate DB
+    Service -> DB : SELECT coupon + book\n**FOR UPDATE**
+    DB --> Service : Coupon + Config
     
-    API --> User : 200 OK\n{success: true, history_id: ...}
+    Service -> Service : Validate:\n- State = ASSIGNED?\n- Not expired?\n- Under max redemptions?
+    
+    alt Validation Failed
+        Service -> DB : ROLLBACK
+        Service -> DB : pg_advisory_unlock(code)
+        Service --> API : ValidationException
+        API --> User : 400/403 Error
+    else Validation Passed
+        Service -> DB : UPDATE coupon\nSET state='REDEEMED'\nINC redemption_count
+        
+        Service -> DB : INSERT redemption_history\n(audit trail)
+        
+        Service -> DB : COMMIT
+        deactivate DB
+        
+        Service -> DB : **pg_advisory_unlock(hashtext(code))**
+        note right: Always released in finally block
+        
+        Service --> API : Coupon + History
+        API --> User : 200 OK\n{success: true, ...}
+    end
 end
+
+deactivate Service
 deactivate API
 
 note over User, DB
-  **Key Points for Interview:**
-  1. **Permanent operation** (no undo)
-  2. **Atomic transaction** (update + audit)
-  3. **Multi-redemption support** (configurable)
-  4. **Audit trail** for compliance
-  5. Either ALL succeed or ALL fail
+  **Key Implementation Details:**
+  1. **Advisory lock** prevents race conditions
+  2. **Row lock** (FOR UPDATE) ensures transaction safety
+  3. **Two-level protection** (advisory + row)
+  4. Works from **ASSIGNED** state (no LOCKED required)
+  5. Lock **always released** (finally block)
+  6. Atomic operation (all or nothing)
 end note
 
 @enduml

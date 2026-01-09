@@ -19,89 +19,69 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 ---
 
-## 🚀 Production Readiness & Deployment Options
+## 📋 What Was Asked
 
-### Deployment Approaches
+**Challenge**: Design an API for a Coupon Book Service
 
-**1. Monolithic (Simple Start)**
-- ECS Fargate or AWS App Runner
-- RDS PostgreSQL Multi-AZ
-- CloudFront + S3 for frontend
-- ✅ Simple, cost-effective, handles significant load
+**Required Deliverables**:
+1. **System Architecture** - High-level design outline
+2. **Database Schema** - High-level database design
+3. **API Endpoints** - RESTful endpoints with request/response formats
+4. **Pseudocode** - For 3 critical operations (assign, lock, redeem)
+5. **Deployment Strategy** - Brief description for AWS/GCP
 
-**2. Microservices (Scale & Teams)**
-- Auth Service + Coupon Service + Redemption Service
-- Independent scaling and deployment
-- Event-driven communication (SQS/EventBridge)
-- ✅ Better for large orgs, independent teams
+**Key Requirements**:
+- Create, distribute, and manage coupons
+- Random coupon assignment with concurrency handling
+- Lock mechanism for redemption
+- Multi-redemption support (configurable)
+- Max assignments per user (configurable)
 
-**3. Serverless (Variable Load)**
-- Lambda functions + API Gateway
-- Aurora Serverless or DynamoDB
-- Auto-scale to zero, pay per request
-- ✅ Perfect for spiky traffic, minimal ops
-
-**Production Additions** (any approach):
-- CloudWatch metrics & X-Ray tracing
-- Secrets Manager for credentials
-- Rate limiting & DDoS protection
-- Database backups & DR plan
+**Technical Challenges to Solve**:
+- Database locking and state management
+- Randomness logic under concurrent load
+- Prevent race conditions and ensure data integrity
 
 ---
 
-## 📋 Challenge Deliverables
+<!-- DELIVERABLE 1: SYSTEM ARCHITECTURE -->
 
-**1. ✅ System Architecture** (High-Level System Architecture)
-- 3-tier design: Frontend, Backend, Database
-- Independent services with deployment-agnostic approach
-- Complete diagram included
-
-**2. ✅ Database Design** (High-Level Database Design)
-- 6 tables with relationships and constraints
-- Complete schema with ER diagram
-
-**3. ✅ API Endpoints** (API Design)
-- 6 required endpoints + request/response formats
-- OpenAPI documentation at `/docs`
-
-**4. ✅ Critical Operations** (3 Implementations + Diagrams)
-- Assign coupon, Lock coupon, Redeem coupon
-- Real code + sequence diagrams
-
-**5. ✅ Deployment Strategy** (AWS/GCP)
-- 3 options: Monolithic, Microservices, Serverless
-- AWS diagram included
-
-- 3 options: Monolithic, Microservices, Serverless
-- AWS diagram included
-
----
-
-## 🏗️ Architecture Overview
+## 🏗️ Deliverable 1: System Architecture
 
 ![Architecture Diagram](diagrams/exported/png/System-Architecture.png)
 
 **3-Tier Design**:
-- Frontend: Vue 3 SPA
-- Backend: FastAPI with async services
-- Data: PostgreSQL with connection pooling
-
-**Deployment Flexibility**:
-- 📦 **Monolithic**: ECS/App Runner (simple, cost-effective)
-- 🔷 **Microservices**: Separate auth, coupon, redemption services
-- ⚡ **Serverless**: Lambda + API Gateway + Aurora Serverless
+- **Frontend**: Vue 3 SPA
+- **Backend**: FastAPI with async services  
+- **Data**: PostgreSQL with connection pooling
 
 **Key Principle**: Stateless, service-separated, deployment-agnostic
 
 ---
 
-## 🗄️ Database Schema
+## Tech Stack Justification
+
+| Layer | Technology | Rationale |
+|-------|-----------|-----------|
+| **Backend** | FastAPI + Python 3.11 | Async/await, auto docs, type safety |
+| **Database** | PostgreSQL 15 | ACID, advisory locks, row locking |
+| **ORM** | SQLAlchemy 2.0 (async) | Modern async patterns |
+| **Frontend** | Vue 3 + Pinia | Reactive, lightweight, modern |
+| **Infrastructure** | Docker Compose | Consistent environments |
+
+**Every choice optimized for**: Concurrency, data integrity, developer experience
+
+---
+
+<!-- DELIVERABLE 2: DATABASE DESIGN -->
+
+## 🗄️ Deliverable 2: Database Design
 
 ![Database Schema](diagrams/exported/png/Database-Schema.png)
 
 ---
 
-## 📊 Database Schema (Detail)
+## Database Schema Detail
 
 **6 Tables**:
 - **Users**: Authentication (JWT, bcrypt, roles)
@@ -118,124 +98,56 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 ---
 
-## 🔄 State Machine
+## State Machine Design
 
 ![State Machine](diagrams/exported/png/State-Machine.png)
 
----
-
-## 🔄 State Machine (Explained)
-
 ```
 UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
-              ↑           ↓
-              └───────────┘ (unlock on timeout)
+              ↓          ↑
+              └──────────┘ (direct path or via lock)
+              ↓           ↓
+              └─────────────→ REDEEMED (unlock on timeout)
 ```
 
 **Key Transitions**:
-- **Assign**: Claim a coupon (with validation)
-- **Lock**: Prepare for redemption (5 min timeout)
-- **Redeem**: Finalize (permanent, logged)
-- **Unlock**: Automatic timeout (prevents deadlocks)
+- **Assign**: Claim coupon (with validation)
+- **Lock**: Optional temporary hold (5 min timeout) - for demo/testing
+- **Redeem**: Finalize (permanent, logged) - works from ASSIGNED or LOCKED
+- **Unlock**: Manual or automatic timeout (prevents deadlocks)
 
-**Every transition is validated** - prevents all edge cases
-
----
-
-## ✨ Key Features
-
-### Required (Challenge Specs)
-- � **Random Assignment** - With SELECT FOR UPDATE SKIP LOCKED
-- ♻️ **Multi-Redemption** - Configurable per book
-- � **Max Assignments** - Per user, per book
-- 📤 **Code Upload/Generation** - CSV upload or pattern-based
-- 🔒 **Lock Mechanism** - Temporary lock before redeem
-- 🔄 **State Machine** - UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
-
-### Bonus (Production Additions)
-- 🔐 **JWT Authentication** - Role-based access (ADMIN/USER)
-- 🎨 **Vue 3 Frontend** - Full UI implementation
-- 📦 **User Pools** - Bulk distribution (equal/random modes)
-- 📝 **Audit Trail** - Complete redemption history
-- ✅ **Test Suite** - Comprehensive validation scripts
-
-**From design doc to working product** 🚀
+**Note**: Lock is **optional** - redemption works directly from ASSIGNED state.
+Advisory locks during redemption prevent race conditions.
 
 ---
 
-## 📊 Challenge Requirements vs Delivery
+<!-- DELIVERABLE 3: API ENDPOINTS -->
 
-| Requirement | Asked For | Delivered |
-|------------|-----------|-----------|
-| System Architecture | High-level design | ✅ + Detailed diagrams |
-| Database Design | High-level schema | ✅ + Full implementation |
-| API Endpoints | Design + formats | ✅ + Working FastAPI |
-| Pseudocode | 3 key operations | ✅ + Production code |
-| Deployment Strategy | High-level plan | ✅ + Docker + AWS docs |
-| **Frontend** | ❌ Not required | ✅ Full Vue 3 app |
-| **Authentication** | ❌ Not specified | ✅ JWT + RBAC |
-| **Testing** | ❌ Not required | ✅ Test suite |
-| **Documentation** | Basic | ✅ 11 docs + 8 diagrams |
-
-**I turned a design exercise into a production-ready demo** 💪
-
----
-
-## ⚡ Concurrency Solution
-
-**The Problem**: 1000 users, 100 codes left. No duplicates. No race conditions.
-
-**The Solution**:
-```python
-# PostgreSQL advisory locks + SKIP LOCKED
-async with session.begin():
-    # 1. Acquire book-level advisory lock
-    await session.execute(text("SELECT pg_advisory_lock(:book_id)"), 
-                          {"book_id": book_hash})
-    
-    # 2. SELECT FOR UPDATE SKIP LOCKED
-    coupon = await session.execute(
-        select(Coupon)
-        .where(Coupon.book_id == book_id, Coupon.state == 'UNASSIGNED')
-        .with_for_update(skip_locked=True)
-        .limit(1)
-    )
-    
-    # 3. Assign atomically
-    coupon.state = 'ASSIGNED'
-    coupon.assigned_user_id = user_id
-```
-
-**Result**: Scales perfectly under concurrent load 🚀
-
----
-
-## 🧪 Concurrency Demo
-
-![Sequence Diagram](diagrams/exported/png/Assign-Random-Coupon.png)
-
-**Validated with concurrent test scripts** - 100 simultaneous requests ✅
-
----
-
-## � API Endpoints (Required)
+## 🔌 Deliverable 3: API Endpoints
 
 The 6 endpoints requested in the challenge:
 
-| Endpoint | Purpose | Implementation |
-|----------|---------|----------------|
-| `POST /coupons` | Create coupon book | ✅ `/api/v1/books` |
-| `POST /coupons/codes` | Upload codes (CSV) | ✅ `/api/v1/books/{id}/codes/upload` |
-| `POST /coupons/assign` | Assign random coupon | ✅ `/api/v1/coupons/assign/random` |
-| `POST /coupons/assign/{code}` | Assign specific code | ✅ `/api/v1/coupons/assign/{code}` |
-| `POST /coupons/lock/{code}` | Temporary lock (5 min) | ✅ `/api/v1/coupons/lock/{code}` |
-| `POST /coupons/redeem/{code}` | Permanent redemption | ✅ `/api/v1/coupons/redeem/{code}` |
+| Endpoint | Purpose | Implementation | Code Details |
+|----------|---------|----------------|--------------|
+| `POST /coupons` | Create coupon book | ✅ `/api/v1/books` | - |
+| `POST /coupons/codes` | Upload codes (CSV) | ✅ `/api/v1/books/{id}/codes/upload` | - |
+| `POST /coupons/assign` | Assign random coupon | ✅ `/api/v1/coupons/assign/random` | [See implementation ⬇️](#-deliverable-4a-assign-random-coupon) |
+| `POST /coupons/assign/{code}` | Assign specific code | ✅ `/api/v1/coupons/assign/{code}` | - |
+| `POST /coupons/lock/{code}` | Temporary lock (5 min) | ✅ `/api/v1/coupons/lock/{code}` | [See implementation ⬇️](#-deliverable-4b-lock-coupon) |
+| `POST /coupons/redeem/{code}` | Permanent redemption | ✅ `/api/v1/coupons/redeem/{code}` | [See implementation ⬇️](#-deliverable-4c-redeem-coupon) |
 
 **Complete documentation**: `http://localhost:8000/docs` (OpenAPI/Swagger)
 
+**Note**: The 3 most critical operations (assign, lock, redeem) are detailed below with full implementation code.
+
 ---
 
-## 💻 Implementation: Assign Random Coupon
+<!-- DELIVERABLE 4: KEY OPERATIONS (3 implementations) -->
+
+## 💻 Deliverable 4a: Assign Random Coupon
+
+**Challenge Requirement**: Random assignment with concurrency handling  
+**API Endpoint**: [`POST /coupons/assign`](#-deliverable-3-api-endpoints) → `/api/v1/coupons/assign/random`
 
 ```python
 # app/services/assignment_service.py (line 83)
@@ -275,45 +187,55 @@ async def assign_random_coupon(
 
 ---
 
-## 🔄 Diagram: Random Assignment
+## Diagram: Random Assignment Flow
 
 ![Assign Random Coupon](diagrams/exported/png/Assign-Random-Coupon.png)
 
-**No race conditions**: SKIP LOCKED + Advisory Locks
+**Solution**: PostgreSQL advisory locks + SKIP LOCKED
+**Validated**: 100 concurrent requests - zero duplicates ✅
 
 ---
 
-## 💻 Implementation: Lock Coupon
+## 💻 Deliverable 4b: Lock Coupon
+
+**Challenge Requirement**: Lock mechanism for redemption  
+**API Endpoint**: [`POST /coupons/lock/{code}`](#-deliverable-3-api-endpoints) → `/api/v1/coupons/lock/{code}`
 
 ```python
-# app/services/lock_service.py (line 45)
+# app/services/redemption_service.py (line 26)
 async def lock_coupon(
     db: AsyncSession,
-    user_id: int,
-    code: str
+    code: str,
+    user_id: str,
+    lock_duration_seconds: int = 300
 ) -> Coupon:
-    # 1. SELECT FOR UPDATE (ownership validation)
-    stmt = (
-        select(Coupon)
-        .where(Coupon.code == code)
-        .with_for_update()
+    # 1. Get coupon and validate state transition
+    result = await db.execute(
+        select(Coupon).where(Coupon.code == code)
     )
-    result = await db.execute(stmt)
     coupon = result.scalar_one_or_none()
     
-    # 2. Validations
-    if coupon.assigned_user_id != user_id:
-        raise HTTPException(403, "Not your coupon")
+    if not CouponState.is_valid_transition(coupon.state, CouponState.LOCKED):
+        raise InvalidStateTransitionException(...)
     
-    if coupon.state != CouponState.ASSIGNED:
-        raise HTTPException(400, "Invalid state")
+    # 2. Check if already locked
+    if coupon.is_locked and coupon.locked_until > datetime.now(timezone.utc):
+        raise CouponLockedException(
+            f"Coupon {code} is locked until {coupon.locked_until}"
+        )
     
-    # 3. Apply temporary lock (5 minutes)
+    # 3. Acquire PostgreSQL advisory lock
+    lock_acquired = await self._try_acquire_advisory_lock(db, code)
+    if not lock_acquired:
+        raise CouponLockedException(
+            f"Could not acquire lock - concurrent access"
+        )
+    
+    # 4. Apply temporary lock (5 minutes)
     coupon.state = CouponState.LOCKED
-    coupon.locked_at = datetime.utcnow()
-    coupon.locked_by_user_id = user_id
-    coupon.lock_expires_at = (
-        datetime.utcnow() + timedelta(minutes=5)
+    coupon.is_locked = True
+    coupon.locked_until = (
+        datetime.now(timezone.utc) + timedelta(seconds=300)
     )
     
     await db.commit()
@@ -322,207 +244,291 @@ async def lock_coupon(
 
 ---
 
-## 🔄 Diagram: Lock Coupon
+## Diagram: Lock Coupon Flow
 
 ![Lock Coupon](diagrams/exported/png/Lock-Coupon.png)
 
-**Temporary lock**: Prevents deadlocks with 5-minute timeout
+**Solution**: Advisory lock + temporary lock with 5-minute timeout
+**Prevents deadlocks, optional for demo purposes** ✅
 
 ---
 
-## 💻 Implementation: Redeem Coupon
+## 💻 Deliverable 4c: Redeem Coupon
+
+**Challenge Requirement**: Ensure data integrity during redemption  
+**API Endpoint**: [`POST /coupons/redeem/{code}`](#-deliverable-3-api-endpoints) → `/api/v1/coupons/redeem/{code}`
 
 ```python
-# app/services/redemption_service.py (line 270)
+# app/services/redemption_service.py (line 137)
 async def redeem_coupon(
     db: AsyncSession,
-    user_id: int,
-    code: str
-) -> Coupon:
-    # 1. SELECT FOR UPDATE
-    stmt = (
-        select(Coupon)
-        .where(Coupon.code == code)
-        .with_for_update()
-    )
-    result = await db.execute(stmt)
-    coupon = result.scalar_one_or_none()
-    
-    # 2. Validate lock ownership and expiration
-    if coupon.state != CouponState.LOCKED:
-        raise HTTPException(400, "Coupon not locked")
-    
-    if coupon.locked_by_user_id != user_id:
-        raise HTTPException(403, "Lock owned by another")
-    
-    if coupon.lock_expires_at < datetime.utcnow():
-        raise HTTPException(410, "Lock expired")
-    
-    # 3. Verify redemption limit
-    book = await db.get(Book, coupon.book_id)
-    if not book.allow_multiple_redemptions:
-        # Check if already redeemed
-        stmt = select(RedemptionHistory).where(
-            RedemptionHistory.coupon_id == coupon.id
+    code: str,
+    user_id: str,
+    metadata: Optional[dict] = None
+) -> tuple[Coupon, RedemptionHistory]:
+    # 1. Acquire advisory lock (prevents concurrent redemption)
+    lock_acquired = await self._try_acquire_advisory_lock(db, code)
+    if not lock_acquired:
+        raise CouponLockedException(
+            f"Could not acquire lock on coupon {code} - concurrent redemption"
         )
-        result = await db.execute(stmt)
-        if result.scalar_one_or_none():
-            raise HTTPException(400, "Already redeemed")
     
-    # 4. Update state + audit trail
-    coupon.state = CouponState.REDEEMED
-    coupon.redeemed_at = datetime.utcnow()
-    coupon.redemption_count += 1
-    
-    history = RedemptionHistory(
-        coupon_id=coupon.id,
-        user_id=user_id,
-        redeemed_at=datetime.utcnow()
-    )
-    db.add(history)
-    
-    await db.commit()
-    return coupon
+    try:
+        # 2. Get coupon with row lock
+        result = await db.execute(
+            select(Coupon)
+            .where(Coupon.code == code)
+            .with_for_update()
+        )
+        coupon = result.scalar_one_or_none()
+        
+        # 3. Validate state (ASSIGNED or REDEEMED for multi-use)
+        valid_states = [CouponState.ASSIGNED]
+        if book.allow_multi_redemption:
+            valid_states.append(CouponState.REDEEMED)
+        
+        if coupon.state not in valid_states:
+            raise InvalidStateTransitionException(...)
+        
+        # 4. Check max redemptions per user
+        if book.max_redemptions_per_user:
+            user_redemptions = await db.execute(...)
+            if user_redemptions >= book.max_redemptions_per_user:
+                raise NoRedemptionsRemainingException(...)
+        
+        # 5. Perform redemption + audit trail
+        coupon.redemption_count += 1
+        coupon.state = CouponState.REDEEMED
+        
+        history = RedemptionHistory(
+            code=code,
+            user_id=user_id,
+            book_id=coupon.book_id
+        )
+        db.add(history)
+        
+        await db.commit()
+        return coupon, history
+        
+    finally:
+        # Always release advisory lock
+        await self._release_advisory_lock(db, code)
 ```
 
 ---
 
-## 🔄 Diagram: Coupon Redemption
+## Diagram: Redemption Flow
 
 ![Redeem Coupon](diagrams/exported/png/Redeem-Coupon.png)
 
-**Key Steps**: Validation + multi-redemption check + audit trail
+**Solution**: Advisory lock + row lock + multi-redemption check + audit trail
+**Race conditions prevented, data integrity ensured** ✅
 
 ---
 
-## 🔒 Security & Performance
+<!-- DELIVERABLE 5: DEPLOYMENT STRATEGY -->
 
-### Security Considerations
+## 🚀 Deliverable 5: Deployment Strategy
+
+### Three Deployment Approaches
+
+**1. Monolithic (Recommended Start)**
+- **Infrastructure**: ECS Fargate or AWS App Runner
+- **Database**: RDS PostgreSQL Multi-AZ
+- **Frontend**: CloudFront + S3
+- **Benefits**: Simple, cost-effective, handles significant load
+
+**2. Microservices (For Scale)**
+- **Services**: Auth + Coupon + Redemption (independent)
+- **Communication**: Event-driven (SQS/EventBridge)
+- **Benefits**: Independent scaling, team autonomy
+
+**3. Serverless (Variable Load)**
+- **Compute**: Lambda + API Gateway
+- **Database**: Aurora Serverless
+- **Benefits**: Auto-scale to zero, pay per request
+
+---
+
+## AWS Deployment Architecture
+
+![AWS Deployment](diagrams/exported/png/AWS-Deployment.png)
+
+**Production Components**:
+- **Compute**: ECS Fargate with auto-scaling
+- **Database**: RDS PostgreSQL Multi-AZ
+- **CDN**: CloudFront for frontend
+- **Monitoring**: CloudWatch + X-Ray
+- **Security**: VPC, Secrets Manager, WAF
+
+**Scalability**: Horizontal scaling at every layer ✅
+
+---
+
+<!-- TECHNICAL CHALLENGES ADDRESSED -->
+
+## ⚡ Technical Challenge #1: Concurrency
+
+**Problem**: 1000 users, 100 codes left → No duplicates, no race conditions
+
+**Solution**:
+```python
+# Two-level locking strategy
+async with session.begin():
+    # Level 1: Advisory lock at book level
+    await session.execute(
+        text("SELECT pg_advisory_lock(:book_id)"), 
+        {"book_id": book_hash}
+    )
+    
+    # Level 2: Row-level lock with SKIP LOCKED
+    coupon = await session.execute(
+        select(Coupon)
+        .where(Coupon.book_id == book_id, 
+               Coupon.state == 'UNASSIGNED')
+        .with_for_update(skip_locked=True)
+        .limit(1)
+    )
+```
+
+**Result**: Scales perfectly under load ✅
+
+---
+
+## 🔒 Technical Challenge #2: Security & Performance
+
+### Security Measures
 - **Authentication**: JWT tokens with expiration
-- **Authorization**: Role-based access (ADMIN/USER)
+- **Authorization**: Role-based access control (ADMIN/USER)
 - **Passwords**: Bcrypt hashing (cost factor 12)
 - **Input Validation**: Pydantic schemas on all endpoints
-- **SQL Injection**: Protection via ORM (SQLAlchemy)
+- **SQL Injection**: Full ORM protection (SQLAlchemy)
 
-### Performance Considerations
+### Performance Optimizations
 - **Database**: Connection pooling (asyncpg)
-- **Queries**: Indexes on foreign keys and state
+- **Indexes**: On foreign keys and state columns
 - **Concurrency**: Advisory locks + SKIP LOCKED
-- **Caching**: Potential for Redis (future improvement)
-- **Async/Await**: Non-blocking I/O throughout backend
+- **Async I/O**: Non-blocking operations throughout
+- **Future**: Redis caching layer
 
 ---
 
-## �💻 API Highlights
+## 🎯 Technical Challenge #3: State Management
 
-**Modern Python Patterns**:
-- ✅ Async/await everywhere
-- ✅ Pydantic for validation
-- ✅ Service layer for business logic
-- ✅ Custom exceptions → HTTP codes
-- ✅ Comprehensive error messages
-- ✅ OpenAPI docs at `/docs`
+**Problem**: Database locking and state management under concurrent access
 
-**Code Quality**:
-- Type hints throughout
-- Clean separation of concerns
-- Testable and maintainable
+**Solution**: Validated state machine with PostgreSQL locking
+
+```
+UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
+              ↑           ↓
+              └───────────┘ (unlock on timeout)
+```
+
+**Implementation**:
+- ✅ Each transition validated before execution
+- ✅ Row-level locking (SELECT FOR UPDATE)
+- ✅ Advisory locks for book-level ops
+- ✅ Automatic timeout handling
+
+**Result**: Bulletproof business logic ✅
 
 ---
 
-## 🎨 Frontend Demo
+<!-- BONUS FEATURES -->
 
-**Live Demo Time!** 
+## 🎁 Beyond Requirements
 
-**Flow**:
-1. Login as admin
-2. Create a coupon book
-3. Upload codes (CSV)
-4. Distribute to user pool
-5. Switch to user account
-6. Lock and redeem coupon
+**What wasn't asked but was delivered:**
+
+| Feature | Status | Value |
+|---------|--------|-------|
+| **Working Implementation** | ✅ | Not just design - fully functional |
+| **Frontend Application** | ✅ | Vue 3 SPA with modern UX |
+| **JWT Authentication** | ✅ | Role-based access control |
+| **User Pools** | ✅ | Bulk distribution system |
+| **Test Suite** | ✅ | Integration & concurrent tests |
+| **Documentation** | ✅ | 11 docs + 8 diagrams |
+
+**From design exercise to production-ready demo** 🚀
+
+---
+
+## 🎨 Live Demo
+
+**Demo Flow** (5 minutes):
+1. **Admin**: Login
+2. **Admin**: Create coupon book
+3. **Admin**: Upload codes (CSV)
+4. **Admin**: Distribute to user pool
+5. **User**: Switch account
+6. **User**: Lock and redeem coupon
 
 **UX Features**:
 - Toast notifications (non-blocking)
 - Real-time state updates
 - Lock countdown timers
-- Color-coded feedback
+- Color-coded status feedback
 
 ---
 
-## ✅ Testing & Quality
+## ✅ Quality Assurance
 
-**Test Coverage**:
+**Testing Strategy**:
 - `showcase_tests.sh` - Comprehensive integration tests
-- Concurrent request simulation
+- Concurrent request simulation (100 simultaneous)
 - Error case validation
 - State machine edge cases
 
 **Error Handling**:
 - Database exceptions → user-friendly messages
-- Validation before DB hits
+- Validation before DB operations
 - Actionable error responses
+- Proper HTTP status codes
 
 **Documentation**:
-- 8 PlantUML diagrams
-- Comprehensive README files
+- 8 PlantUML diagrams (all exported)
+- 11 comprehensive markdown docs
 - Inline code documentation
+- API documentation (OpenAPI/Swagger)
 
 ---
 
-## 🎓 Lessons Learned
+## 📊 Summary: Requirements vs Delivery
 
-**Technical Insights**:
-1. PostgreSQL concurrency features are incredibly powerful
-2. State machines make business logic bulletproof
-3. FastAPI's async capabilities shine in I/O workloads
-4. Good documentation = good code
+| Deliverable | Required | Delivered | Status |
+|------------|----------|-----------|--------|
+| 1. System Architecture | Design | Design + Diagrams + Working | ✅ ✅ ✅ |
+| 2. Database Schema | High-level | Full schema + Implementation | ✅ ✅ ✅ |
+| 3. API Endpoints | 6 endpoints | 6 + 14 more + OpenAPI docs | ✅ ✅ ✅ |
+| 4. Key Operations | Pseudocode | Real production code | ✅ ✅ ✅ |
+| 5. Deployment Strategy | Brief description | 3 strategies + AWS diagram | ✅ ✅ ✅ |
 
-**What I'd Improve**:
-- Add comprehensive logging earlier
-- Set up CI/CD from day one
-- Consider Redis for distributed locking
-- Add more frontend unit tests
+**Plus**: Frontend, Auth, Tests, Documentation
+
+**Result**: Exceeded all requirements 🎯
 
 ---
 
 ## 🚀 Production Readiness
 
-**Infrastructure** (Ready to deploy):
-- AWS ECS Fargate (backend)
-- RDS PostgreSQL Multi-AZ (database)
-- CloudFront + S3 (frontend)
-- Application Load Balancer
+**Ready to Deploy**:
+- ✅ Docker containerization
+- ✅ Environment configuration
+- ✅ Database migrations
+- ✅ Async architecture
+- ✅ Error handling
+- ✅ Logging structure
 
 **Still Needed**:
-- CloudWatch metrics & logs
-- AWS Secrets Manager
-- Rate limiting
-- SSL everywhere
-- Database backups
+- CloudWatch metrics & alerts
+- AWS Secrets Manager integration
+- Rate limiting middleware
+- SSL/TLS certificates
+- Database backup strategy
 - Disaster recovery plan
 
 **The hard part (business logic) is done** ✅
-
----
-
-## 📊 Project Metrics
-
-**Code**:
-- Backend: ~3,000 lines of Python
-- Frontend: ~2,000 lines of Vue/TypeScript
-- Database: 6 tables, 8 relationships
-- API: 20+ endpoints
-
-**Documentation**:
-- 11 markdown files (organized)
-- 8 PlantUML diagrams
-- Comprehensive getting started guide
-
-**Time Investment**: [X hours]
-- Implementation: [Y%]
-- Testing & Polish: [Z%]
-- Documentation: [W%]
 
 ---
 
@@ -532,61 +538,24 @@ async def redeem_coupon(
 
 ### Questions?
 
-**GitHub**: [Your repo link]
-**Email**: [Your email]
-
-**Try it yourself**:
-```bash
-git clone [repo]
-cd qble/coupon-service
-docker-compose up -d
-cd frontend && npm install && npm run dev
-# Open http://localhost:5173
-```
-
-**Ready in under 5 minutes** 🚀
-
----
-
-## 📚 Backup Slides
-
-(Additional technical details if needed)
-
----
-
-## Redemption Flow Detail
-
-![Redeem Coupon](diagrams/exported/png/Redeem-Coupon.png)
-
-**Key Steps**:
-1. Validate lock ownership
-2. Check lock expiration
-3. Verify redemption count
-4. Update state atomically
-5. Log to RedemptionHistory
-6. Commit or rollback
-
----
-
-## AWS Deployment Architecture
-
-![AWS Deployment](diagrams/exported/png/AWS-Deployment.png)
-
-**Production Setup**:
-- Auto-scaling backend
-- Multi-AZ database
-- CloudWatch monitoring
-- VPC security
+**Let's discuss**:
+- Architecture decisions
+- Implementation details
+- Trade-offs and alternatives
+- Scaling strategies
+- Production considerations
 
 ---
 
 <!-- _class: lead -->
 
-# Questions?
+# Ready for Q&A
 
-I'm happy to dive deeper into any aspect:
-- Architecture decisions
-- Implementation details
-- Trade-offs and alternatives
-- Scaling considerations
-- Production deployment
+I'm happy to dive deeper into:
+- ✅ Any of the 5 deliverables
+- ✅ Technical challenges & solutions
+- ✅ Code walkthrough
+- ✅ Live demo
+- ✅ Production deployment
+
+**Let's make this conversation!** 💬

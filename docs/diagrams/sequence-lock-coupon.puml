@@ -2,48 +2,62 @@
 skinparam backgroundColor #FEFEFE
 skinparam sequenceMessageAlign center
 
-title Lock Coupon for Redemption (High-Level)
+title Lock Coupon - Optional Demo/Testing Feature
 
 actor User
 participant "API" as API
-database "Database" as DB
+participant "RedemptionService" as Service
+database "PostgreSQL" as DB
 
 User -> API : POST /coupons/lock/{code}\n{user_id}
 activate API
 
-API -> DB : BEGIN TRANSACTION
-activate DB
+API -> Service : lock_coupon(code, user_id)
+activate Service
 
-API -> DB : SELECT coupon\nWHERE code = ?\n**FOR UPDATE**
-note right
-  Row locked until
-  transaction ends
-end note
+Service -> DB : SELECT coupon\nWHERE code = ?
 
-DB --> API : Coupon (locked)
+DB --> Service : Coupon
 
-API -> API : Validate:\n- State = ASSIGNED?\n- User owns coupon?
+Service -> Service : Validate:\n- Valid state transition?\n- Not already locked?
 
 alt Validation Failed
-    API -> DB : ROLLBACK
+    Service --> API : ValidationException
     API --> User : 400/403 Error
 else Validation Passed
-    API -> DB : UPDATE coupon\nSET state='LOCKED'\nSET lock_expires_at=NOW()+5min
+    Service -> DB : **pg_try_advisory_lock(hashtext(code))**
     
-    API -> DB : COMMIT
-    deactivate DB
-    
-    API --> User : 200 OK\n{state: "LOCKED", expires_at: ...}
+    alt Advisory Lock Failed
+        DB --> Service : FALSE (concurrent access)
+        Service --> API : CouponLockedException
+        API --> User : 409 Conflict
+    else Advisory Lock Acquired
+        DB --> Service : TRUE
+        
+        Service -> DB : BEGIN TRANSACTION
+        activate DB
+        
+        Service -> DB : UPDATE coupon\nSET state='LOCKED'\nSET locked_until=NOW()+5min
+        
+        Service -> DB : COMMIT
+        deactivate DB
+        
+        Service --> API : Locked Coupon
+        API --> User : 200 OK\n{state: "LOCKED", expires_at: ...}
+    end
 end
+
+deactivate Service
 deactivate API
 
 note over User, DB
-  **Key Points for Interview:**
-  1. Temporary lock with expiration
-  2. User ownership verification
-  3. State machine validation (FSM)
-  4. Pessimistic locking for safety
-  5. Can be unlocked or progressed to REDEEMED
+  **Important Notes:**
+  1. Lock is **OPTIONAL** - for demo/testing only
+  2. Redemption works **without** lock (from ASSIGNED)
+  3. Advisory lock prevents concurrent lock attempts
+  4. 5-minute timeout prevents deadlocks
+  5. Can be unlocked manually or expires automatically
+  6. **Cannot redeem** while in LOCKED state (must unlock first)
 end note
 
 @enduml

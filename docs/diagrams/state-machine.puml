@@ -16,24 +16,25 @@ UNASSIGNED --> ASSIGNED : assign(user_id)
 UNASSIGNED : Entry: code created
 UNASSIGNED : State: Available for assignment
 
-ASSIGNED --> LOCKED : lock(user_id)
+ASSIGNED --> LOCKED : lock(user_id)\n[OPTIONAL - for demo/testing]
+ASSIGNED --> REDEEMED : redeem(user_id)\n[DIRECT PATH - primary flow]
 ASSIGNED --> ASSIGNED : reassign(user_id)
 ASSIGNED : Entry: user assigned
 ASSIGNED : State: Reserved for user
 ASSIGNED : Exit: ownership validated
 
-LOCKED --> REDEEMED : redeem(user_id)
 LOCKED --> ASSIGNED : unlock(user_id)
-LOCKED : Entry: redemption started
-LOCKED : State: Temporarily locked
-LOCKED : Duration: Configurable timeout
-LOCKED : Exit: validate user & expiry
+LOCKED : Entry: temporary hold
+LOCKED : State: Demo/testing only
+LOCKED : Duration: 5 min timeout
+LOCKED : Note: Cannot redeem while locked
 
 REDEEMED --> [*]
 REDEEMED : Entry: redemption completed
 REDEEMED : State: Permanent
 REDEEMED : Action: Log to history
 REDEEMED : Count: Increment redemption_count
+REDEEMED : Protection: Advisory lock during redemption
 
 note right of UNASSIGNED
   Initial state after:
@@ -42,10 +43,23 @@ note right of UNASSIGNED
 end note
 
 note right of ASSIGNED
-  Validations:
-  - User exists
-  - Max assignments not exceeded
-  - Book is active
+  Two redemption paths:
+  1. ASSIGNED → REDEEMED (primary)
+  2. ASSIGNED → LOCKED → ASSIGNED → REDEEMED (demo)
+  
+  Lock is optional - used for:
+  - Testing concurrency
+  - Demonstrating state machine
+  - Simulating multi-step checkout
+end note
+
+note right of LOCKED
+  Advisory locks prevent race conditions
+  during redemption, not the LOCKED state.
+  
+  LOCKED state is purely for demo/testing.
+  Redemption uses internal advisory locks
+  regardless of coupon state.
 end note
 
 note right of LOCKED
