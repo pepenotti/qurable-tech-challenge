@@ -1,6 +1,0 @@
-# Ignore exported diagram images
-exported/
-
-# But keep the export scripts
-!export.sh
-!export.bat

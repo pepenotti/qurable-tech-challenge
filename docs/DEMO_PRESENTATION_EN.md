@@ -83,7 +83,7 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 ## 🏗️ Architecture Overview
 
-![Architecture Diagram](diagrams/exported/png/System%20Architecture.png)
+![Architecture Diagram](diagrams/exported/png/System-Architecture.png)
 
 **3-Tier Design**:
 - Frontend: Vue 3 SPA
@@ -101,7 +101,7 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 ## 🗄️ Database Schema
 
-![Database Schema](diagrams/exported/png/Database%20Schema.png)
+![Database Schema](diagrams/exported/png/Database-Schema.png)
 
 ---
 
@@ -124,7 +124,7 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 
 ## 🔄 State Machine
 
-![State Machine](diagrams/exported/png/State%20Machine.png)
+![State Machine](diagrams/exported/png/State-Machine.png)
 
 ---
 
@@ -216,7 +216,7 @@ async with session.begin():
 
 ## 🧪 Concurrency Demo
 
-![Sequence Diagram](diagrams/exported/png/Assign%20Random%20Coupon.png)
+![Sequence Diagram](diagrams/exported/png/Assign-Random-Coupon.png)
 
 **Validated with concurrent test scripts** - 100 simultaneous requests ✅
 
@@ -365,7 +365,7 @@ cd frontend && npm install && npm run dev
 
 ## Redemption Flow Detail
 
-![Redeem Coupon](diagrams/exported/png/Redeem%20Coupon.png)
+![Redeem Coupon](diagrams/exported/png/Redeem-Coupon.png)
 
 **Key Steps**:
 1. Validate lock ownership
@@ -379,7 +379,7 @@ cd frontend && npm install && npm run dev
 
 ## AWS Deployment Architecture
 
-![AWS Deployment](diagrams/exported/png/AWS%20Deployment.png)
+![AWS Deployment](diagrams/exported/png/AWS-Deployment.png)
 
 **Production Setup**:
 - Auto-scaling backend
