@@ -44,44 +44,33 @@ backgroundImage: url('https://marp.app/assets/hero-background.svg')
 **Adiciones para Producción** (cualquier enfoque):
 - Métricas de CloudWatch & tracing con X-Ray
 - Secrets Manager para credenciales
-- Rate limiting & protección DDoS
+- Load Balancer para Rate limiting & protección DDoS
 - Backups de database & plan de DR
 
-**La arquitectura es deployment-agnostic** - boundaries limpios permiten cualquier modelo 🎯
-
 ---
 
-## 📋 El Desafío
+## 📋 Deliverables del Desafío
 
-**Lo que se pidió**: Diseño de API + pseudocódigo + arquitectura
+**1. ✅ Arquitectura del Sistema** (High-Level System Architecture)
+- Diseño de 3 capas: Frontend, Backend, Database
+- Servicios independientes con deployment-agnostic
+- Diagrama completo incluido
 
-**Requerimientos Core**:
-- ✅ Coupon books con upload/generación de códigos
-- ✅ Asignación random de cupones con manejo de concurrencia
-- ✅ Mecanismo de lock para redención
-- ✅ Soporte multi-redención (a nivel de book)
-- ✅ Máximo de asignaciones por usuario (a nivel de book)
+**2. ✅ Diseño de Database** (High-Level Database Design)
+- 6 tablas con relationships y constraints
+- Schema completo con ER diagram
 
-**Desafíos Técnicos Clave**:
-1. Locking de database y manejo de estado
-2. Lógica de randomness bajo carga concurrente
-3. Prevenir race conditions e integridad de datos
+**3. ✅ Endpoints de API** (API Design)
+- 6 endpoints requeridos + formatos request/response
+- Documentación OpenAPI en `/docs`
 
-**Lo que entregué**: Implementación completamente funcionando (no solo docs de diseño) ⭐
+**4. ✅ Operaciones Críticas** (3 Implementaciones + Diagramas)
+- Assign coupon, Lock coupon, Redeem coupon
+- Código real + diagramas de secuencia
 
----
-
-## 🛠️ Tech Stack
-
-| Capa | Tecnología | ¿Por qué? |
-|-------|-----------|------|
-| **Backend** | FastAPI + Python 3.11 | Async/await, docs automáticos, type safety |
-| **Database** | PostgreSQL 15 | ACID, advisory locks, row locking |
-| **ORM** | SQLAlchemy 2.0 (async) | Patrones async modernos |
-| **Frontend** | Vue 3 + Pinia | Reactivo, liviano, moderno |
-| **Infraestructura** | Docker Compose | Ambientes consistentes |
-
-**Cada elección fue deliberada** - optimizado para concurrencia, integridad de datos y developer experience.
+**5. ✅ Estrategia de Deployment** (AWS/GCP)
+- 3 opciones: Monolítico, Microservicios, Serverless
+- Diagrama de AWS incluido
 
 ---
 
@@ -171,24 +160,6 @@ UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
 
 ---
 
-## 📊 Requerimientos del Desafío vs Entrega
-
-| Requerimiento | Se Pidió | Entregado |
-|------------|-----------|-----------|
-| System Architecture | Diseño high-level | ✅ + Diagramas detallados |
-| Database Design | Schema high-level | ✅ + Implementación completa |
-| API Endpoints | Diseño + formatos | ✅ + FastAPI funcionando |
-| Pseudocódigo | 3 operaciones clave | ✅ + Código de producción |
-| Deployment Strategy | Plan high-level | ✅ + Docker + docs AWS |
-| **Frontend** | ❌ No requerido | ✅ App Vue 3 completa |
-| **Autenticación** | ❌ No especificado | ✅ JWT + RBAC |
-| **Testing** | ❌ No requerido | ✅ Test suite |
-| **Documentación** | Básica | ✅ 11 docs + 8 diagramas |
-
-**Convertí un ejercicio de diseño en un demo production-ready** 💪
-
----
-
 ## ⚡ Solución de Concurrencia
 
 **El Problema**: 1000 usuarios, 100 códigos restantes. Sin duplicados. Sin race conditions.
@@ -214,36 +185,27 @@ async with session.begin():
     coupon.assigned_user_id = user_id
 ```
 
-**Resultado**: Escala perfectamente bajo carga concurrente 🚀
-
 ---
 
 ## 🧪 Demo de Concurrencia
 
 ![Sequence Diagram](diagrams/exported/png/Assign-Random-Coupon.png)
 
-**Validado con scripts de test concurrentes** - 100 requests simultáneos ✅
-
----
-
-## 💻 Highlights de la API
-
-**Patrones Modernos de Python**:
-- ✅ Async/await en todas partes
-- ✅ Pydantic para validación
-- ✅ Service layer para business logic
-- ✅ Excepciones custom → códigos HTTP
-- ✅ Mensajes de error comprehensivos
-- ✅ Docs OpenAPI en `/docs`
-
-**Calidad de Código**:
-- Type hints en todo
-- Separación limpia de concerns
-- Testeable y mantenible
-
 ---
 
 ## 🎨 Demo del Frontend
+
+### 🛠️ Tech Stack
+
+| Capa | Tecnología | ¿Por qué? |
+|-------|-----------|------|
+| **Backend** | FastAPI + Python 3.11 | Async/await, docs automáticos, type safety |
+| **Database** | PostgreSQL 15 | ACID, advisory locks, row locking |
+| **ORM** | SQLAlchemy 2.0 (async) | Patrones async modernos |
+| **Frontend** | Vue 3 + Pinia | Reactivo, liviano, moderno |
+| **Infraestructura** | Docker Compose | Ambientes consistentes |
+
+**Cada elección fue deliberada** - optimizado para concurrencia, integridad de datos y developer experience.
 
 **¡Momento de Demo en Vivo!** 
 
@@ -260,42 +222,6 @@ async with session.begin():
 - Updates de estado en tiempo real
 - Timers de countdown para locks
 - Feedback con código de colores
-
----
-
-## ✅ Testing & Calidad
-
-**Cobertura de Tests**:
-- `showcase_tests.sh` - Tests de integración comprehensivos
-- Simulación de requests concurrentes
-- Validación de casos de error
-- Edge cases del state machine
-
-**Manejo de Errores**:
-- Excepciones de database → mensajes user-friendly
-- Validación antes de hits a DB
-- Respuestas de error accionables
-
-**Documentación**:
-- 8 diagramas PlantUML
-- READMEs comprehensivos
-- Documentación inline en código
-
----
-
-## 🎓 Lecciones Aprendidas
-
-**Insights Técnicos**:
-1. Los features de concurrencia de PostgreSQL son increíblemente poderosos
-2. Los state machines hacen la business logic bulletproof
-3. Las capacidades async de FastAPI brillan en workloads de I/O
-4. Buena documentación = buen código
-
-**Lo que Mejoraría**:
-- Agregar logging comprehensivo desde el inicio
-- Setup de CI/CD desde el día uno
-- Considerar Redis para locking distribuido
-- Agregar más unit tests en el frontend
 
 ---
 
@@ -319,68 +245,6 @@ async with session.begin():
 
 ---
 
-## 📊 Métricas del Proyecto
-
-**Código**:
-- Backend: ~3,000 líneas de Python
-- Frontend: ~2,000 líneas de Vue/TypeScript
-- Database: 6 tablas, 8 relaciones
-- API: 20+ endpoints
-
-**Documentación**:
-- 11 archivos markdown (organizados)
-- 8 diagramas PlantUML
-- Getting started guide comprehensivo
-
-**Inversión de Tiempo**: [X horas]
-- Implementación: [Y%]
-- Testing & Polish: [Z%]
-- Documentación: [W%]
-
----
-
-<!-- _class: lead -->
-
-## 🙏 ¡Gracias!
-
-### ¿Preguntas?
-
-**GitHub**: [Tu link de repo]
-**Email**: [Tu email]
-
-**Pruébalo vos mismo**:
-```bash
-git clone [repo]
-cd qble/coupon-service
-docker-compose up -d
-cd frontend && npm install && npm run dev
-# Abrir http://localhost:5173
-```
-
-**Listo en menos de 5 minutos** 🚀
-
----
-
-## 📚 Slides de Backup
-
-(Detalles técnicos adicionales si son necesarios)
-
----
-
-## Detalle del Flujo de Canje
-
-![Redeem Coupon](diagrams/exported/png/Redeem-Coupon.png)
-
-**Pasos Clave**:
-1. Validar ownership del lock
-2. Chequear expiración del lock
-3. Verificar contador de canjes
-4. Actualizar estado atómicamente
-5. Log a RedemptionHistory
-6. Commit o rollback
-
----
-
 ## Arquitectura de Deployment en AWS
 
 ![AWS Deployment](diagrams/exported/png/AWS-Deployment.png)
@@ -393,13 +257,199 @@ cd frontend && npm install && npm run dev
 
 ---
 
-<!-- _class: lead -->
+## 🔌 API Endpoints (Requeridos)
 
-# ¿Preguntas?
+Los 6 endpoints solicitados en el desafío:
 
-Estoy disponible para profundizar en cualquier aspecto:
-- Decisiones de arquitectura
-- Detalles de implementación
-- Trade-offs y alternativas
-- Consideraciones de scaling
-- Deployment a producción
+| Endpoint | Propósito | Implementación |
+|----------|-----------|----------------|
+| `POST /coupons` | Crear coupon book | ✅ `/api/v1/books` |
+| `POST /coupons/codes` | Upload códigos (CSV) | ✅ `/api/v1/books/{id}/codes/upload` |
+| `POST /coupons/assign` | Asignar cupón random | ✅ `/api/v1/coupons/assign/random` |
+| `POST /coupons/assign/{code}` | Asignar código específico | ✅ `/api/v1/coupons/assign/{code}` |
+| `POST /coupons/lock/{code}` | Lock temporal (5 min) | ✅ `/api/v1/coupons/lock/{code}` |
+| `POST /coupons/redeem/{code}` | Canje permanente | ✅ `/api/v1/coupons/redeem/{code}` |
+
+**Documentación completa**: `http://localhost:8000/docs` (OpenAPI/Swagger)
+
+---
+
+## � Implementación: Asignar Cupón Random
+
+```python
+# app/services/assignment_service.py (línea 83)
+async def assign_random_coupon(
+    db: AsyncSession, 
+    user_id: int, 
+    book_id: int
+) -> Coupon:
+    # 1. Advisory lock a nivel de book
+    book_hash = hash(book_id) % (2**31)
+    await db.execute(
+        text("SELECT pg_advisory_lock(:id)"), 
+        {"id": book_hash}
+    )
+    
+    # 2. SELECT FOR UPDATE SKIP LOCKED
+    stmt = (
+        select(Coupon)
+        .where(
+            Coupon.book_id == book_id,
+            Coupon.state == CouponState.UNASSIGNED
+        )
+        .with_for_update(skip_locked=True)
+        .limit(1)
+    )
+    result = await db.execute(stmt)
+    coupon = result.scalar_one_or_none()
+    
+    # 3. Asignar atómicamente
+    coupon.state = CouponState.ASSIGNED
+    coupon.assigned_user_id = user_id
+    coupon.assigned_at = datetime.utcnow()
+    
+    await db.commit()
+    return coupon
+```
+
+---
+
+## 🔄 Diagrama: Asignación Random
+
+![Assign Random Coupon](diagrams/exported/png/Assign-Random-Coupon.png)
+
+**Sin race conditions**: SKIP LOCKED + Advisory Locks
+
+---
+
+## � Implementación: Lock Cupón
+
+```python
+# app/services/lock_service.py (línea 45)
+async def lock_coupon(
+    db: AsyncSession,
+    user_id: int,
+    code: str
+) -> Coupon:
+    # 1. SELECT FOR UPDATE (ownership validation)
+    stmt = (
+        select(Coupon)
+        .where(Coupon.code == code)
+        .with_for_update()
+    )
+    result = await db.execute(stmt)
+    coupon = result.scalar_one_or_none()
+    
+    # 2. Validaciones
+    if coupon.assigned_user_id != user_id:
+        raise HTTPException(403, "Not your coupon")
+    
+    if coupon.state != CouponState.ASSIGNED:
+        raise HTTPException(400, "Invalid state")
+    
+    # 3. Aplicar lock temporal (5 minutos)
+    coupon.state = CouponState.LOCKED
+    coupon.locked_at = datetime.utcnow()
+    coupon.locked_by_user_id = user_id
+    coupon.lock_expires_at = (
+        datetime.utcnow() + timedelta(minutes=5)
+    )
+    
+    await db.commit()
+    return coupon
+```
+
+---
+
+## 🔄 Diagrama: Lock Cupón
+
+![Lock Coupon](diagrams/exported/png/Lock-Coupon.png)
+
+**Lock temporal**: Previene deadlocks con timeout de 5 minutos
+
+---
+
+## � Implementación: Canjear Cupón
+
+```python
+# app/services/redemption_service.py (línea 270)
+async def redeem_coupon(
+    db: AsyncSession,
+    user_id: int,
+    code: str
+) -> Coupon:
+    # 1. SELECT FOR UPDATE
+    stmt = (
+        select(Coupon)
+        .where(Coupon.code == code)
+        .with_for_update()
+    )
+    result = await db.execute(stmt)
+    coupon = result.scalar_one_or_none()
+    
+    # 2. Validar lock ownership y expiración
+    if coupon.state != CouponState.LOCKED:
+        raise HTTPException(400, "Coupon not locked")
+    
+    if coupon.locked_by_user_id != user_id:
+        raise HTTPException(403, "Lock owned by another")
+    
+    if coupon.lock_expires_at < datetime.utcnow():
+        raise HTTPException(410, "Lock expired")
+    
+    # 3. Verificar límite de canjes
+    book = await db.get(Book, coupon.book_id)
+    if not book.allow_multiple_redemptions:
+        # Chequear si ya fue canjeado
+        stmt = select(RedemptionHistory).where(
+            RedemptionHistory.coupon_id == coupon.id
+        )
+        result = await db.execute(stmt)
+        if result.scalar_one_or_none():
+            raise HTTPException(400, "Already redeemed")
+    
+    # 4. Actualizar estado + audit trail
+    coupon.state = CouponState.REDEEMED
+    coupon.redeemed_at = datetime.utcnow()
+    coupon.redemption_count += 1
+    
+    history = RedemptionHistory(
+        coupon_id=coupon.id,
+        user_id=user_id,
+        redeemed_at=datetime.utcnow()
+    )
+    db.add(history)
+    
+    await db.commit()
+    return coupon
+```
+
+---
+
+## 🔄 Diagrama: Canje de Cupón
+
+## � Diagrama: Canje de Cupón
+
+![Redeem Coupon](diagrams/exported/png/Redeem-Coupon.png)
+
+**Pasos Clave**: Validación + multi-redemption check + audit trail
+
+---
+
+## �🔒 Seguridad & Performance
+
+### Seguridad (Security Considerations)
+- **Autenticación**: JWT tokens con expiración
+- **Autorización**: Role-based access (ADMIN/USER)
+- **Passwords**: Bcrypt hashing (cost factor 12)
+- **Input Validation**: Pydantic schemas en todos los endpoints
+- **SQL Injection**: Protección via ORM (SQLAlchemy)
+
+### Performance (Performance Considerations)
+- **Database**: Connection pooling (asyncpg)
+- **Queries**: Indexes en foreign keys y estado
+- **Concurrencia**: Advisory locks + SKIP LOCKED
+- **Caching**: Potencial para Redis (future improvement)
+- **Async/Await**: Non-blocking I/O en todo el backend
+
+---
