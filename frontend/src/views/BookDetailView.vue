@@ -115,8 +115,8 @@
                 <th>Code</th>
                 <th>State</th>
                 <th>Assigned To</th>
-                <th>Assigned At</th>
-                <th>Redeemed At</th>
+                <th>Redemptions</th>
+                <th>Locked Until</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -129,17 +129,32 @@
                   </span>
                 </td>
                 <td>
-                  <span v-if="coupon.assigned_to">
-                    <code>{{ coupon.assigned_to }}</code>
+                  <span v-if="coupon.assigned_user_id">
+                    <code class="user-id-short" :title="coupon.assigned_user_id">
+                      {{ coupon.assigned_user_id.substring(0, 8) }}...
+                    </code>
+                  </span>
+                  <span v-else-if="coupon.state === 'ASSIGNED' || coupon.state === 'LOCKED' || coupon.state === 'REDEEMED'" 
+                        class="text-danger" 
+                        title="State indicates assignment but user_id is missing">
+                    ⚠️ Missing ID
                   </span>
                   <span v-else class="text-muted">—</span>
                 </td>
                 <td>
-                  <span v-if="coupon.assigned_at">{{ formatDate(coupon.assigned_at) }}</span>
-                  <span v-else class="text-muted">—</span>
+                  <span v-if="coupon.redemption_count > 0">
+                    {{ coupon.redemption_count }} / {{ coupon.max_redemptions }}
+                    <small v-if="coupon.has_redemptions_remaining" class="text-success">
+                      ({{ coupon.remaining_redemptions }} left)
+                    </small>
+                  </span>
+                  <span v-else class="text-muted">0 / {{ coupon.max_redemptions }}</span>
                 </td>
                 <td>
-                  <span v-if="coupon.redeemed_at">{{ formatDate(coupon.redeemed_at) }}</span>
+                  <span v-if="coupon.is_locked && coupon.locked_until">
+                    <span class="text-warning">🔒</span>
+                    {{ formatDate(coupon.locked_until) }}
+                  </span>
                   <span v-else class="text-muted">—</span>
                 </td>
                 <td>
@@ -265,6 +280,12 @@ const fetchCoupons = async () => {
   try {
     const response = await booksApi.getBookCoupons(route.params.id)
     coupons.value = response.coupons || response || []
+    
+    // Debug: Log the first coupon to see the structure
+    if (coupons.value.length > 0) {
+      console.log('Sample coupon data:', coupons.value[0])
+      console.log('Total coupons loaded:', coupons.value.length)
+    }
   } catch (err) {
     console.error('Error fetching coupons:', err)
   } finally {
@@ -549,6 +570,29 @@ onMounted(async () => {
 .state-badge.redeemed {
   background: #d4edda;
   color: #155724;
+}
+
+.user-id-short {
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  cursor: help;
+}
+
+.text-success {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-weight: 600;
 }
 
 .text-muted {

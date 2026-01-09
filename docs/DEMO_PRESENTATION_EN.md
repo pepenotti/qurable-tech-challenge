@@ -464,26 +464,20 @@ UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
 5. **User**: Switch account
 6. **User**: Lock and redeem coupon
 
-**UX Features**:
-- Toast notifications (non-blocking)
-- Real-time state updates
-- Lock countdown timers
-- Color-coded status feedback
-
 ---
 
 ## ✅ Quality Assurance
 
 **Testing Strategy**:
 - `showcase_tests.sh` - Comprehensive integration tests
-- Concurrent request simulation (100 simultaneous)
-- Error case validation
-- State machine edge cases
+- [Pending] Load test: Concurrent request simulation (100 simultaneous)
+- [Pending] Backend unit tests
+- [Pending] Frontend unit tests (Jest) and E2E tests (Cypress)
 
 **Error Handling**:
 - Database exceptions → user-friendly messages
 - Validation before DB operations
-- Actionable error responses
+- [Pending] Actionable error responses
 - Proper HTTP status codes
 
 **Documentation**:
@@ -491,71 +485,3 @@ UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
 - 11 comprehensive markdown docs
 - Inline code documentation
 - API documentation (OpenAPI/Swagger)
-
----
-
-## 📊 Summary: Requirements vs Delivery
-
-| Deliverable | Required | Delivered | Status |
-|------------|----------|-----------|--------|
-| 1. System Architecture | Design | Design + Diagrams + Working | ✅ ✅ ✅ |
-| 2. Database Schema | High-level | Full schema + Implementation | ✅ ✅ ✅ |
-| 3. API Endpoints | 6 endpoints | 6 + 14 more + OpenAPI docs | ✅ ✅ ✅ |
-| 4. Key Operations | Pseudocode | Real production code | ✅ ✅ ✅ |
-| 5. Deployment Strategy | Brief description | 3 strategies + AWS diagram | ✅ ✅ ✅ |
-
-**Plus**: Frontend, Auth, Tests, Documentation
-
-**Result**: Exceeded all requirements 🎯
-
----
-
-## 🚀 Production Readiness
-
-**Ready to Deploy**:
-- ✅ Docker containerization
-- ✅ Environment configuration
-- ✅ Database migrations
-- ✅ Async architecture
-- ✅ Error handling
-- ✅ Logging structure
-
-**Still Needed**:
-- CloudWatch metrics & alerts
-- AWS Secrets Manager integration
-- Rate limiting middleware
-- SSL/TLS certificates
-- Database backup strategy
-- Disaster recovery plan
-
-**The hard part (business logic) is done** ✅
-
----
-
-<!-- _class: lead -->
-
-## 🙏 Thank You!
-
-### Questions?
-
-**Let's discuss**:
-- Architecture decisions
-- Implementation details
-- Trade-offs and alternatives
-- Scaling strategies
-- Production considerations
-
----
-
-<!-- _class: lead -->
-
-# Ready for Q&A
-
-I'm happy to dive deeper into:
-- ✅ Any of the 5 deliverables
-- ✅ Technical challenges & solutions
-- ✅ Code walkthrough
-- ✅ Live demo
-- ✅ Production deployment
-
-**Let's make this conversation!** 💬

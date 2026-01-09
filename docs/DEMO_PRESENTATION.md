@@ -463,26 +463,20 @@ UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
 5. **User**: Cambiar de cuenta
 6. **User**: Lockear y canjear cupón
 
-**Features de UX**:
-- Notificaciones toast (non-blocking)
-- Updates de estado en tiempo real
-- Timers de countdown para locks
-- Feedback con código de colores
-
 ---
 
 ## ✅ Aseguramiento de Calidad
 
 **Estrategia de Testing**:
 - `showcase_tests.sh` - Tests de integración comprehensivos
-- Simulación de requests concurrentes (100 simultáneos)
-- Validación de casos de error
-- Edge cases del state machine
+- [Pendiente] Load test: Simulación de requests concurrentes (100 simultáneos)
+- [Pendiente] Unit tests en backend
+- [Pendiente] Unit test (jest) y E2E tests (cypress) en front
 
 **Manejo de Errores**:
 - Excepciones de database → mensajes user-friendly
 - Validación antes de operaciones de DB
-- Respuestas de error accionables
+- [Pendiente] Respuestas de error accionables
 - Códigos de estado HTTP apropiados
 
 **Documentación**:
@@ -490,71 +484,3 @@ UNASSIGNED → ASSIGNED → LOCKED → REDEEMED
 - 11 documentos markdown comprehensivos
 - Documentación inline en código
 - Documentación de API (OpenAPI/Swagger)
-
----
-
-## 📊 Resumen: Requerimientos vs Entrega
-
-| Entregable | Requerido | Entregado | Estado |
-|------------|-----------|-----------|--------|
-| 1. Arquitectura del Sistema | Diseño | Diseño + Diagramas + Funcionando | ✅ ✅ ✅ |
-| 2. Schema de Database | High-level | Schema completo + Implementación | ✅ ✅ ✅ |
-| 3. Endpoints de API | 6 endpoints | 6 + 14 más + docs OpenAPI | ✅ ✅ ✅ |
-| 4. Operaciones Clave | Pseudocódigo | Código de producción real | ✅ ✅ ✅ |
-| 5. Estrategia de Deployment | Descripción breve | 3 estrategias + diagrama AWS | ✅ ✅ ✅ |
-
-**Plus**: Frontend, Auth, Tests, Documentación
-
-**Resultado**: Se excedieron todos los requerimientos 🎯
-
----
-
-## 🚀 Preparación para Producción
-
-**Listo para Deploy**:
-- ✅ Containerización con Docker
-- ✅ Configuración de environment
-- ✅ Migraciones de database
-- ✅ Arquitectura async
-- ✅ Manejo de errores
-- ✅ Estructura de logging
-
-**Aún Necesario**:
-- Métricas y alertas de CloudWatch
-- Integración con AWS Secrets Manager
-- Middleware de rate limiting
-- Certificados SSL/TLS
-- Estrategia de backups de database
-- Plan de disaster recovery
-
-**La parte difícil (business logic) está hecha** ✅
-
----
-
-<!-- _class: lead -->
-
-## 🙏 ¡Gracias!
-
-### ¿Preguntas?
-
-**Conversemos sobre**:
-- Decisiones de arquitectura
-- Detalles de implementación
-- Trade-offs y alternativas
-- Estrategias de scaling
-- Consideraciones de producción
-
----
-
-<!-- _class: lead -->
-
-# Listo para Q&A
-
-Puedo profundizar en:
-- ✅ Cualquiera de los 5 entregables
-- ✅ Desafíos técnicos y soluciones
-- ✅ Code walkthrough
-- ✅ Demo en vivo
-- ✅ Deployment en producción
-
-**¡Hagamos esto una conversación!** 💬
